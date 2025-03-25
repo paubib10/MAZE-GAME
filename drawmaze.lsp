@@ -1,15 +1,20 @@
 (defun dibujar-laberinto (laberinto posicion-jugador posicion-meta)
   ; "Dibuja el laberinto en la ventana gráfica usando la función cuadrado."
   (cls) ; Limpia la ventana gráfica
-  (let ((celda-tamaño 25) ; Tamaño de cada celda en píxeles
-        (x 0)
-        (y 0))
+  (let* ((ancho-ventana 640) ; Ancho de la ventana gráfica
+         (alto-ventana 375)  ; Alto de la ventana gráfica
+         (filas (length laberinto)) ; Número de filas del laberinto
+         (columnas (length (first laberinto))) ; Número de columnas del laberinto
+         (celda-tamaño (floor (min (/ ancho-ventana columnas) (/ alto-ventana filas)))) ; Tamaño dinámico de las celdas
+         (x 0)
+         (y 0))
     (labels ((dibujar-celda (x y tipo)
                (cond
-                ((eql tipo 'paret) (color 0 0 0))      ; Negro para paredes
+                ((eql tipo 'paret) (color 0 0 0))       ; Negro para paredes
                 ((eql tipo 'cami) (color 255 255 255)) ; Blanco para caminos
                 ((eql tipo 'entrada) (color 0 0 255))  ; Azul para la entrada
-                ((eql tipo 'sortida) (color 255 0 0))) ; Rojo para la salida
+                ((eql tipo 'sortida) (color 255 0 0))  ; Rojo para la salida
+                ((eql tipo 'jugador) (color 0 255 0))) ; Verde para el jugador
                (move x y) ; Mueve el cursor a la posición (x, y)
                (quadrat celda-tamaño))) ; Dibuja el cuadrado de la celda
       (mapc (lambda (fila)
