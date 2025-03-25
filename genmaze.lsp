@@ -40,9 +40,14 @@
 
 ; ---------------------------- SET_CELDA -----------------------------
 (defun set-celda (laberint fila col valor)
-  ; "Establece el valor de una celda en el laberinto."
-  (let ((fila-actual (nth fila laberint)))
-    (setf (nth col fila-actual) valor)))
+  ; "Establece el valor de una celda en el laberinto sin usar nth."
+  (set-celda-en-fila (get-fila laberint fila) col valor))
+
+(defun set-celda-en-fila (fila col valor)
+  ; "Establece el valor de una celda específica en una fila."
+  (cond
+   ((zerop col) (setf (car fila) valor))
+   (t (set-celda-en-fila (cdr fila) (- col 1) valor))))
 
 ; ---------------------------- DFS_GENERAR -----------------------------
 (defun dfs-generar (laberint fila col)
