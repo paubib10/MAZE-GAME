@@ -3,27 +3,47 @@
   (cls) ; Limpia la ventana gráfica
   (let* ((ancho-ventana 640) ; Ancho de la ventana gráfica
          (alto-ventana 375)  ; Alto de la ventana gráfica
-         (filas (length laberinto)) ; Número de filas del laberinto
-         (columnas (length (first laberinto))) ; Número de columnas del laberinto
-         (celda-tamaño (floor (min (/ ancho-ventana columnas) (/ alto-ventana filas)))) ; Tamaño dinámico de las celdas
-         (x 0)
-         (y 0))
-    (labels ((dibujar-celda (x y tipo)
-               (cond
-                ((eql tipo 'paret) (color 0 0 0))       ; Negro para paredes
-                ((eql tipo 'cami) (color 255 255 255)) ; Blanco para caminos
-                ((eql tipo 'entrada) (color 0 0 255))  ; Azul para la entrada
-                ((eql tipo 'sortida) (color 255 0 0))  ; Rojo para la salida
-                ((eql tipo 'jugador) (color 0 255 0))) ; Verde para el jugador
-               (move x y) ; Mueve el cursor a la posición (x, y)
-               (quadrat celda-tamaño))) ; Dibuja el cuadrado de la celda
-      (mapc (lambda (fila)
-              (mapc (lambda (celda)
-                      (dibujar-celda x y celda)
-                      (setf x (+ x celda-tamaño))) ; Avanza en el eje X
-                    fila)
-              (setf x 0 y (+ y celda-tamaño))) ; Reinicia X y avanza en el eje Y
-            (reverse laberinto))))) ; Invertir las filas para corregir el eje vertical
+         (filas (contar-elementos laberinto)) ; Número de filas del laberinto
+         (columnas (contar-elementos (car laberinto))) ; Número de columnas del laberinto
+         (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberinto)))
+    (dibujar-filas (reverse laberinto) 0 0 0 celda-tam))) ; Invertir las filas para corregir el eje vertical
+
+(defun calcular-celda-tam (ancho-ventana alto-ventana laberinto)
+  ; "Calcula el tamaño de las celdas dinámicamente."
+  (let ((filas (contar-elementos laberinto))
+        (columnas (contar-elementos (car laberinto))))
+    (floor (min (/ ancho-ventana columnas) (/ alto-ventana filas)))))
+
+(defun contar-elementos (lista)
+  ; "Cuenta los elementos de una lista de forma recursiva."
+  (cond
+   ((null lista) 0)
+   (t (+ 1 (contar-elementos (cdr lista))))))
+
+(defun dibujar-filas (laberinto fila-actual x y celda-tam)
+  ; "Dibuja las filas del laberinto recursivamente."
+  (cond
+   ((null laberinto) nil)
+   (t (dibujar-columnas (car laberinto) x y celda-tam)
+      (dibujar-filas (cdr laberinto) (+ fila-actual 1) 0 (+ y celda-tam) celda-tam))))
+
+(defun dibujar-columnas (fila x y celda-tam)
+  ; "Dibuja las columnas de una fila recursivamente."
+  (cond
+   ((null fila) nil)
+   (t (dibujar-celda x y (car fila) celda-tam)
+      (dibujar-columnas (cdr fila) (+ x celda-tam) y celda-tam))))
+
+(defun dibujar-celda (x y tipo celda-tam)
+  ; "Dibuja una celda en la posición (x, y) con el tipo especificado."
+  (cond
+   ((eq tipo 'paret) (color 0 0 0))       ; Negro para paredes
+   ((eq tipo 'cami) (color 255 255 255)) ; Blanco para caminos
+   ((eq tipo 'entrada) (color 0 0 255))  ; Azul para la entrada
+   ((eq tipo 'sortida) (color 255 0 0))  ; Rojo para la salida
+   ((eq tipo 'jugador) (color 0 255 0))) ; Verde para el jugador
+  (move x y) ; Mueve el cursor a la posición (x, y)
+  (quadrat celda-tam)) ; Dibuja el cuadrado de la celda
 
 (defun quadrat (m)
  (drawrel m 0)
