@@ -23,7 +23,7 @@
                       (setf x (+ x celda-tamaño))) ; Avanza en el eje X
                     fila)
               (setf x 0 y (+ y celda-tamaño))) ; Reinicia X y avanza en el eje Y
-            laberinto))))
+            (reverse laberinto))))) ; Invertir las filas para corregir el eje vertical
 
 (defun quadrat (m)
  (drawrel m 0)
