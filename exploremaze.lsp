@@ -1,25 +1,48 @@
-(defun imprimir-laberinto (nombre-fichero)
-  ; "Lee el laberinto desde un archivo y lo imprime en la consola."
-  (let ((laberinto (cargar-laberinto nombre-fichero)))
-    (labels ((imprimir-fila (fila)
-               (cond
-                ((null fila) (terpri)) ; Salto de línea al final de la fila
-                (t (princ (simbolo-a-caracter (car fila)))
-                   (imprimir-fila (cdr fila)))))
-             (imprimir-laberinto-rec (laberinto)
-               (cond
-                ((null laberinto) nil)
-                (t (imprimir-fila (car laberinto))
-                   (imprimir-laberinto-rec (cdr laberinto))))))
-      (imprimir-laberinto-rec laberinto))))
+(load "drawmaze.lsp") ; Cargar las funciones de dibujo
 
-(defun simbolo-a-caracter (simbolo)
-  ; "Convierte un símbolo del laberinto a su representación de carácter."
+(defun explora (nombre-fichero)
+  ; "Carga el laberinto desde un archivo y lo dibuja en la ventana gráfica."
+  (let* ((laberinto (cargar-laberinto nombre-fichero))
+         (posicion-jugador (buscar-posicion laberinto 'entrada))
+         (posicion-meta (buscar-posicion laberinto 'sortida)))
+    (if (and posicion-jugador posicion-meta)
+        (dibujar-laberinto laberinto posicion-jugador posicion-meta)
+        (format t "El laberinto no tiene entrada o salida válidas.~%"))))
+
+(defun cargar-laberinto (nombre-fichero)
+  ; "Carga el laberinto desde un archivo de texto y lo convierte en una lista de listas."
+  (let ((fp (open nombre-fichero :direction :input)))
+    (labels ((leer-lineas ()
+               (let ((linea (read-line fp nil)))
+                 (if linea
+                     (cons (mapcar #'caracter-a-simbolo (coerce linea 'list))
+                           (leer-lineas))
+                     nil))))
+      (let ((laberinto (leer-lineas)))
+        (close fp)
+        laberinto))))
+
+(defun caracter-a-simbolo (caracter)
+  ; "Convierte un carácter del archivo a su representación simbólica."
   (cond
-   ((eql simbolo 'paret) #\#)
-   ((eql simbolo 'cami) #\.)
-   ((eql simbolo 'entrada) #\e)
-   ((eql simbolo 'sortida) #\s)
-   (t #\?))) ; Carácter desconocido
+   ((char= caracter #\#) 'paret)
+   ((char= caracter #\.) 'cami)
+   ((char= caracter #\e) 'entrada)
+   ((char= caracter #\s) 'sortida)
+   (t 'desconocido)))
 
-; (imprimir-laberinto "laberinto.txt")
+(defun buscar-posicion (laberinto simbolo)
+  ; "Busca la posición de un símbolo en el laberinto."
+  (labels ((buscar-en-fila (fila simbolo fila-index col-index)
+             (cond
+              ((null fila) nil)
+              ((eql (car fila) simbolo) (list fila-index col-index))
+              (t (buscar-en-fila (cdr fila) simbolo fila-index (+ col-index 1)))))
+           (buscar-en-laberinto (laberinto simbolo fila-index)
+             (cond
+              ((null laberinto) nil)
+              (t (let ((pos (buscar-en-fila (car laberinto) simbolo fila-index 0)))
+                   (if pos
+                       pos
+                       (buscar-en-laberinto (cdr laberinto) simbolo (+ fila-index 1))))))))
+    (buscar-en-laberinto laberinto simbolo 0)))
