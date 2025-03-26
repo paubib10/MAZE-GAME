@@ -1,5 +1,5 @@
-(load "genmaze.lsp")
-(load "exploremaze.lsp")
+(load "generacio.lsp")
+(load "exploracio.lsp")
 
 (defun main ()
   ; "Función principal para generar un laberinto y guardarlo en un archivo."

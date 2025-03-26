@@ -1,4 +1,4 @@
-(load "drawmaze.lsp")
+(load "dibuixar.lsp")
 
 ; ---------------------------- EXPLORA -------------------------------
 (defun explora (nombre-fichero)
