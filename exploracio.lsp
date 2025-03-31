@@ -9,7 +9,7 @@
     (cond
      ((and posicion-jugador posicion-meta)
       (dibujar-laberinto laberinto posicion-jugador posicion-meta))
-     (t (format t "El laberinto no tiene entrada o salida válidas.~%")))))
+     (t (format t "El laberinto no tiene entrada o salida validas.~%")))))
 
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nombre-fichero)
