@@ -6,7 +6,8 @@
          (filas (contar-elementos laberinto)) ; Número de filas del laberinto
          (columnas (contar-elementos (car laberinto))) ; Número de columnas del laberinto
          (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberinto)))
-    (dibujar-filas (reverse laberinto) 0 0 0 celda-tam))) ; Invertir las filas para corregir el eje vertical
+    (dibujar-filas (reverse laberinto) 0 0 0 celda-tam) ; Dibuja el laberinto
+    (dibujar-jugador posicion-jugador celda-tam filas))) ; Dibuja el jugador
 
 (defun calcular-celda-tam (ancho-ventana alto-ventana laberinto)
   ; "Calcula el tamaño de las celdas dinámicamente."
@@ -44,6 +45,14 @@
    ((eq tipo 'jugador) (color 0 255 0))) ; Verde para el jugador
   (move x y) ; Mueve el cursor a la posición (x, y)
   (quadrat celda-tam)) ; Dibuja el cuadrado de la celda
+
+(defun dibujar-jugador (posicion-jugador celda-tam filas)
+  ; "Dibuja el jugador en la posición especificada, ajustando por el reverse."
+  (let ((x (* (second posicion-jugador) celda-tam))
+        (y (* (- filas 1 (first posicion-jugador)) celda-tam))) ; Ajusta la fila
+    (color 0 255 0) ; Verde para el jugador
+    (move x y) ; Mueve el cursor a la posición del jugador
+    (quadrat celda-tam))) ; Dibuja el cuadrado del jugador
 
 (defun quadrat (m)
  (drawrel m 0)
