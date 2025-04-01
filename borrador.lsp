@@ -1,5 +1,5 @@
 (defun llegir-linia ()
-    "Llegeix una línia de text per consola, la imprimeix i l'escriu en un fitxer."
+    ; "Llegeix una línia de text per consola, la imprimeix i l'escriu en un fitxer."
     (let ((entrada ""))
         (loop
             (setf entrada (read-line))
@@ -14,7 +14,7 @@
         entrada))
 
 (defun iniciar-llegir-linia ()
-    "Funció principal per llegir linies de manera interactiva."
+    ; "Funció principal per llegir linies de manera interactiva."
     (loop
         (format t "Escriu una linia (o escriu 'sortir' per acabar):~%")
         (let ((entrada (llegir-linia)))

@@ -3,8 +3,7 @@
 ; ---------------------------- EXPLORA -------------------------------
 (defun explora (nom-fitxer &optional (viewport nil) (passes 0))
   ; "Inicia l'exploració del laberint carregat des de nom-fitxer."
-  (let* ((fitxer-classificacio "clasificacion.txt") ; Inicialitza el fitxer de classificació
-         (laberint (cargar-laberinto nom-fitxer))
+  (let* ((laberint (cargar-laberinto nom-fitxer))
          (posicio-jugador (buscar-posicion laberint 'entrada))
          (posicio-meta (buscar-posicion laberint 'sortida)))
     (cond
@@ -17,12 +16,11 @@
          (let ((moviment (llegir-moviment)))
            (cond
             ((eq moviment 'sortir)
-             (format t "Has sortit de l'exploracio.~%")
+             (format t "Has sortit de l'exploració.~%")
              (return))
             ((es-meta? posicio-jugador posicio-meta)
              (format t "Enhorabona! Has arribat a la meta en ~A passes.~%" passes)
-             (actualitzar-classificacio fitxer-classificacio passes) ; Utilitza el fitxer inicialitzat
-             (mostrar-classificacio fitxer-classificacio) ; Utilitza el fitxer inicialitzat
+             (guardar-nom-i-passes passes) ; Guarda el nom i passes al fitxer
              (return))
             ((moviment-valid? laberint posicio-jugador moviment)
              (setf posicio-jugador (moure-jugador posicio-jugador moviment))
@@ -76,54 +74,15 @@
    ((eq (car fila) simbolo) (list fila-index col-index))
    (t (buscar-en-fila (cdr fila) simbolo fila-index (+ col-index 1)))))
 
-; --------------------------- CLASSIFICACIO ---------------------------
-(defun actualitzar-classificacio (nom-fitxer passes)
-  ; "Actualitza la classificació del laberint amb el nombre de passes."
-  (let* ((fitxer-classificacio "clasificacion.txt") ; Assegura que la variable està inicialitzada
-         (classificacio (or (carregar-classificacio fitxer-classificacio) '())) ; Usa una llista buida si és NIL
-         (nom (progn (format t "Introdueix el teu nom: ") (read-line))))
-    (setf classificacio (ordenar-classificacio (cons (list nom passes) classificacio)))
-    (guardar-classificacio fitxer-classificacio classificacio)))
-
-(defun carregar-classificacio (fitxer)
-  ; "Carrega la classificació des del fitxer."
-  (let ((fp (open fitxer :direction :input :if-does-not-exist nil)))
-    (if fp
-        (progn
-          (let ((classificacio (read fp nil nil))) ; Llegeix el contingut o retorna NIL si està buit
-            (close fp)
-            (if (null classificacio) '() classificacio))) ; Retorna una llista buida si el fitxer està buit
-        '()))) ; Retorna una llista buida si el fitxer no existeix
-
-(defun guardar-classificacio (fitxer classificacio)
-  ; "Guarda la classificació al fitxer."
-  (let ((fp (open fitxer :direction :output :if-exists :supersede)))
-    (if fp
-        (progn
-          (princ classificacio fp) ; Escriu la classificació al fitxer
-          (close fp))
-        (format t "Error: No s'ha pogut obrir el fitxer ~A per escriure.~%" fitxer))))
-
-(defun mostrar-classificacio (nom-fitxer)
-  ; "Mostra les 10 millors puntuacions del laberint."
-  (let ((fitxer-classificacio "clasificacion.txt") ; Inicialitza explícitament
-        (classificacio (or (carregar-classificacio fitxer-classificacio) '()))) ; Usa una llista buida si és NIL
-    (format t "Classificacio del laberint (~A):~%" nom-fitxer)
-    (loop for (nom passes) in (subseq classificacio 0 (min 10 (length classificacio)))
-          do (format t "~A: ~A passes~%" nom passes))))
-
-(defun ordenar-classificacio (classificacio)
-  ; "Ordena la classificació pel nombre de passes, de menor a major."
-  (sort classificacio #'< :key #'second))
-
-(defun fitxer-existeix? (fitxer)
-  ; "Comprova si un fitxer existeix intentant obrir-lo."
-  (let ((fp (open fitxer :direction :input :if-does-not-exist nil)))
-    (if fp
-        (progn
-          (close fp)
-          t) ; Retorna T si el fitxer es pot obrir
-        nil))) ; Retorna NIL si el fitxer no existeix
+; -------------------------- GUARDAR NOM I PASSES ------------------------
+(defun guardar-nom-i-passes (passes)
+  ; "Demana el nom del jugador i guarda el nom i passes al fitxer."
+  (let ((fitxer "clasificacion.txt"))
+    (format t "Introdueix el teu nom: ")
+    (let ((nom (read-line)))
+      (with-open-file (fp fitxer :direction :output :if-exists :append :if-does-not-exist :create)
+        (format fp "~A: ~A passes~%" nom passes))
+      (format t "S'ha guardat el teu nom i passes al fitxer ~A.~%" fitxer))))
 
 ;-------------------------- MOVIMENT DEL JUGADOR ------------------------
 
