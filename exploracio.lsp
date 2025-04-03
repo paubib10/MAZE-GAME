@@ -16,7 +16,7 @@
          (let ((moviment (llegir-moviment)))
            (cond
             ((eq moviment 'sortir)
-             (format t "Has sortit de l'exploració.~%")
+             (format t "Has sortit de l'exploracio.~%")
              (return))
             ((es-meta? posicio-jugador posicio-meta)
              (format t "Enhorabona! Has arribat a la meta en ~A passes.~%" passes)
