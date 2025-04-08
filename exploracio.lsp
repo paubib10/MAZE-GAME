@@ -1,7 +1,7 @@
 (load "dibuixar.lsp")
 
 ; ---------------------------- EXPLORA -------------------------------
-(defun explora (nom-fitxer &optional (viewport nil) (passes 0))
+(defun explora (nom-fitxer nom-jugador &optional (viewport nil) (passes 0))
   "Inicia l'exploració del laberint carregat des de nom-fitxer."
   (let* ((laberint (cargar-laberinto nom-fitxer))
          (posicio-jugador (buscar-posicion laberint 'entrada))
@@ -11,9 +11,9 @@
       (format t "El laberint no te entrada o sortida valides.~%"))
      (t
       (cls)
-      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer)))))
+      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)))))
 
-(defun explora-rec (laberint posicio-jugador posicio-meta passes nom-fitxer)
+(defun explora-rec (laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)
   "Funció recursiva per explorar el laberint."
   (cls)
   (dibujar-laberinto laberint posicio-jugador posicio-meta)
@@ -22,16 +22,17 @@
      ((eq moviment 'sortir)
       (format t "Has sortit de l'exploracio.~%"))
      ((es-meta? posicio-jugador posicio-meta)
-      (format t "Enhorabona! Has arribat a la meta en ~A passes.~%" passes)
-      (guardar-nom-i-passes passes nom-fitxer))
+      (format t "Enhorabona, ~A! Has arribat a la meta en ~A passes.~%" nom-jugador passes)
+      (guardar-nom-i-passes passes nom-fitxer nom-jugador))
      ((moviment-valid? laberint posicio-jugador moviment)
       (explora-rec laberint
                    (moure-jugador posicio-jugador moviment)
                    posicio-meta
                    (+ passes 1)
-                   nom-fitxer))
+                   nom-fitxer
+                   nom-jugador))
      (t
-      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer)))))
+      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)))))
 
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nom-fitxer)
@@ -82,17 +83,16 @@
    (t (buscar-en-fila (cdr fila) simbolo fila-index (+ col-index 1)))))
 
 ; -------------------------- GUARDAR NOM I PASSES ------------------------
-(defun guardar-nom-i-passes (passes nom-fitxer)
-  "Demana el nom del jugador i guarda el nom, passes i nom del fitxer al fitxer de classificació."
+(defun guardar-nom-i-passes (passes nom-fitxer nom-jugador)
+  "Guarda el nom del jugador, passes i nom del fitxer al fitxer de classificació."
   (let ((fitxer "clasificacion.txt"))
-    (let ((nom (read-line)))
-      (let ((fp (open fitxer :direction :output :if-exists :append :if-does-not-exist :create)))
-        (cond
-         (fp
-          (format fp "~A: ~A passes (Mapa: ~A)~%" nom passes nom-fitxer)
-          (close fp)
-          (format t "S'ha guardat el teu nom, passes i mapa al fitxer ~A.~%" fitxer))
-         (t (format t "Error: No s'ha pogut obrir el fitxer ~A.~%" fitxer)))))))
+    (let ((fp (open fitxer :direction :output :if-exists :append :if-does-not-exist :create)))
+      (cond
+       (fp
+        (format fp "~A: ~A passes (Mapa: ~A)~%" nom-jugador passes nom-fitxer)
+        (close fp)
+        (format t "S'ha guardat el teu nom, passes i mapa al fitxer ~A.~%" fitxer))
+       (t (format t "Error: No s'ha pogut obrir el fitxer ~A.~%" fitxer))))))
 
 ;-------------------------- MOVIMENT DEL JUGADOR ------------------------
 (defun llegir-moviment ()
