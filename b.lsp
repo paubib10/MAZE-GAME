@@ -6,7 +6,7 @@
          (laberinto (crear-laberinto-vacio n-reducido m-reducido)))
     (let ((entrada (seleccionar-entrada laberinto n-reducido m-reducido)))
       (let ((laberinto-con-entrada (colocar-entrada laberinto entrada)))
-        (let ((laberinto-generado (dfs-generar-laberinto laberinto-con-entrada entrada n-reducido m-reducido)))
+        (let ((laberinto-generado (dfs-generar-laberinto laberinto-con-entrada entrada)))
           (let ((salida (seleccionar-salida laberinto-generado n-reducido m-reducido)))
             (let ((laberinto-final (colocar-salida laberinto-generado salida)))
               ;; Asegurarse de que la entrada no se sobrescriba
@@ -15,7 +15,7 @@
                   (guardar-laberinto nom-fitxer laberinto-con-bordes)
                   laberinto-con-bordes)))))))))
 
-;;; Crear laberinto vacío como lista de listasx 
+;;; Crear laberinto vacío como lista de listas
 (defun crear-laberinto-vacio (n m)
   "Crea una lista de N listas con M paredes cada una"
   (construir-filas n m))
@@ -88,45 +88,36 @@
    (t (cons (car lista) (eliminar-indice (- indice 1) (cdr lista))))))
 
 ;;; Función DFS recursiva para generar caminos
-(defun dfs-generar-laberinto (laberinto pos-actual n m)
-  "Genera caminos en el laberinto usando DFS."
+(defun dfs-generar-laberinto (laberinto pos-actual)
   (let ((laberinto-actualizado (reemplazar-posicion laberinto (car pos-actual) (cadr pos-actual) 'cami)))
     (let ((dirs (mezclar-direcciones '((0 -1) (1 0) (0 1) (-1 0))))) ; Direcciones: izquierda, abajo, derecha, arriba
-      (dfs-visitar-vecinos laberinto-actualizado pos-actual dirs n m))))
+      (dfs-visitar-vecinos laberinto-actualizado pos-actual dirs))))
 
-(defun dfs-visitar-vecinos (laberinto pos-actual dirs n m)
-  "Visita las celdas vecinas recursivamente usando DFS."
+(defun dfs-visitar-vecinos (laberinto pos-actual dirs)
   (cond
    ((null dirs) laberinto) ; Caso base: no hay más direcciones
    (t (let ((dir (car dirs)))
         (let ((nueva-pos (list (+ (car pos-actual) (car dir))
                                (+ (cadr pos-actual) (cadr dir)))))
-          (if (es-pared-valida laberinto nueva-pos n m)
+          (if (es-pared-valida laberinto nueva-pos)
               (dfs-visitar-vecinos
-               (dfs-generar-laberinto laberinto nueva-pos n m)
+               (dfs-generar-laberinto laberinto nueva-pos)
                pos-actual
-               (cdr dirs)
-               n m)
-              (dfs-visitar-vecinos laberinto pos-actual (cdr dirs) n m)))))))
+               (cdr dirs))
+              (dfs-visitar-vecinos laberinto pos-actual (cdr dirs))))))))
 
-(defun es-pared-valida (laberinto pos n m)
-  "Verifica si una celda es una pared válida para ser convertida en camino."
-  (and (es-posicion-valida pos n m)
+(defun es-pared-valida (laberinto pos)
+  (and (es-posicion-valida pos)
        (eq (obtener-celda laberinto (car pos) (cadr pos)) 'paret)
-       (= (contar-celdas-camino-adyacentes laberinto pos n m) 1)))
+       (= (contar-celdas-camino-adyacentes laberinto pos) 1)))
 
-(defun es-posicion-valida (pos n m)
-  "Verifica si la posición está dentro de los límites del laberinto."
-  (and (>= (car pos) 0) (< (car pos) n)
-       (>= (cadr pos) 0) (< (cadr pos) m)))
+(defun es-posicion-valida (pos)
+  (and (>= (car pos) 0) (< (car pos) 25)
+       (>= (cadr pos) 0) (< (cadr pos) 25)))
 
 (defun get-celda (laberinto fila col)
   "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
-  (iterar-hasta col (iterar-hasta fila laberinto)))
-
-(defun iterar-hasta (n lista)
-  (cond ((= n 0) (car lista))
-        (t (iterar-hasta (- n 1) (cdr lista)))))
+  (nth col (nth fila laberinto)))
 
 ;;; Obtener celda del laberinto
 (defun obtener-celda (laberinto fila col)
@@ -137,23 +128,21 @@
     (cond ((= n 0) (car lista))
                 (t (iterar-hasta (- n 1) (cdr lista)))))
 
-(defun contar-celdas-camino-adyacentes (laberinto pos n m)
-  "Cuenta cuántas celdas adyacentes son caminos válidos."
+(defun contar-celdas-camino-adyacentes (laberinto pos)
   (let ((adyacentes (list (list (- (car pos) 1) (cadr pos)) ; Arriba
                           (list (+ (car pos) 1) (cadr pos)) ; Abajo
                           (list (car pos) (- (cadr pos) 1)) ; Izquierda
                           (list (car pos) (+ (cadr pos) 1))))) ; Derecha
-    (contar-celdas-camino-adyacentes-rec laberinto adyacentes n m 0)))
+    (contar-celdas-camino-adyacentes-rec laberinto adyacentes 0)))
 
-(defun contar-celdas-camino-adyacentes-rec (laberinto adyacentes n m contador)
-  "Cuenta recursivamente las celdas adyacentes que son caminos."
+(defun contar-celdas-camino-adyacentes-rec (laberinto adyacentes contador)
   (cond
    ((null adyacentes) contador)
-   ((and (es-posicion-valida (car adyacentes) n m)
+   ((and (es-posicion-valida (car adyacentes))
          (eq (obtener-celda laberinto (car (car adyacentes)) (cadr (car adyacentes))) 'cami))
-    (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) n m (+ contador 1)))
+    (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) (+ contador 1)))
    (t
-    (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) n m contador))))
+    (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) contador))))
 
 ;;; Reemplazar celda en el laberinto
 (defun reemplazar-posicion (laberinto fila col valor)
