@@ -2,7 +2,7 @@
 
 ; ---------------------------- EXPLORA -------------------------------
 (defun explora (nom-fitxer &optional (viewport nil) (passes 0))
-  ; "Inicia l'exploració del laberint carregat des de nom-fitxer."
+  "Inicia l'exploració del laberint carregat des de nom-fitxer."
   (let* ((laberint (cargar-laberinto nom-fitxer))
          (posicio-jugador (buscar-posicion laberint 'entrada))
          (posicio-meta (buscar-posicion laberint 'sortida)))
@@ -11,20 +11,26 @@
       (format t "El laberint no te entrada o sortida valides.~%"))
      (t
       (cls)
-      (loop
-         (dibujar-laberinto laberint posicio-jugador posicio-meta)
-         (let ((moviment (llegir-moviment)))
-           (cond
-            ((eq moviment 'sortir)
-             (format t "Has sortit de l'exploracio.~%")
-             (return))
-            ((es-meta? posicio-jugador posicio-meta)
-             (format t "Enhorabona! Has arribat a la meta en ~A passes.~%" passes)
-             (guardar-nom-i-passes passes) ; Guarda el nom i passes al fitxer
-             (return))
-            ((moviment-valid? laberint posicio-jugador moviment)
-             (setf posicio-jugador (moure-jugador posicio-jugador moviment))
-             (setf passes (+ passes 1))))))))))
+      (explora-rec laberint posicio-jugador posicio-meta passes)))))
+
+(defun explora-rec (laberint posicio-jugador posicio-meta passes)
+  "Funció recursiva per explorar el laberint."
+  (cls)
+  (dibujar-laberinto laberint posicio-jugador posicio-meta)
+  (let ((moviment (llegir-moviment)))
+    (cond
+     ((eq moviment 'sortir)
+      (format t "Has sortit de l'exploracio.~%"))
+     ((es-meta? posicio-jugador posicio-meta)
+      (format t "Enhorabona! Has arribat a la meta en ~A passes.~%" passes)
+      (guardar-nom-i-passes passes))
+     ((moviment-valid? laberint posicio-jugador moviment)
+      (explora-rec laberint
+                   (moure-jugador posicio-jugador moviment)
+                   posicio-meta
+                   (+ passes 1)))
+     (t
+      (explora-rec laberint posicio-jugador posicio-meta passes)))))
 
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nom-fitxer)
@@ -85,10 +91,8 @@
       (format t "S'ha guardat el teu nom i passes al fitxer ~A.~%" fitxer))))
 
 ;-------------------------- MOVIMENT DEL JUGADOR ------------------------
-
 (defun llegir-moviment ()
   ; "Llegeix el moviment del jugador des del teclat amb get-key."
-  (format t "Mou-te amb WASD o ESC per sortir.")
   (let ((tecla (get-key)))
     (cond
      ((or (= tecla 65) (= tecla 97) (= tecla 331)) 'esquerra) ; A o ←
