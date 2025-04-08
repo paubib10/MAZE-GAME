@@ -82,7 +82,7 @@
    ((eq (car fila) simbolo) (list fila-index col-index))
    (t (buscar-en-fila (cdr fila) simbolo fila-index (+ col-index 1)))))
 
-; -------------------------- GUARDAR NOM I PASSES ------------------------
+; -------------------------- CLASSIFICACIO --------------------------
 (defun guardar-nom-i-passes (passes nom-fitxer nom-jugador)
   "Guarda el nom del jugador, passes i nom del fitxer al fitxer de classificació."
   (let ((fitxer "clasificacion.txt"))

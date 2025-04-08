@@ -2,13 +2,13 @@
 (load "exploracio.lsp")
 
 (defun main ()
-  "Función principal que muestra un menú interactivo para gestionar laberintos."
+  "Funcion principal que muestra un menu interactivo para gestionar laberintos."
   (format t "Benvingut al gestor de laberints!~%")
   (menu))
 
 (defun menu ()
-  "Muestra un menú interactivo para el usuario."
-  (format t "~%Selecciona una opció:~%")
+  "Muestra un menu interactivo para el usuario."
+  (format t "~%Selecciona una opcio:~%")
   (format t "1. Generar un laberint~%")
   (format t "2. Explorar un laberint~%")
   (format t "3. Sortir~%")
@@ -16,8 +16,8 @@
     (cond
      ((= opcio 1) (menu-generar-laberint))
      ((= opcio 2) (menu-explorar-laberint))
-     ((= opcio 3) (format t "Sortint del programa. Adéu!~%"))
-     (t (format t "Opció no vàlida. Torna-ho a intentar.~%")
+     ((= opcio 3) (format t "Sortint del programa. Adeu!~%"))
+     (t (format t "Opcio no valida. Torna-ho a intentar.~%")
         (menu)))))
 
 (defun menu-generar-laberint ()
