@@ -3,3 +3,7 @@ caracola
 pau is a great english student
 hola
 hola3
+: 10 passes
+pau: 17 passes
+Pau: 9 passes
+Pau Toni: 24 passes (Mapa: laberinto.txt)
