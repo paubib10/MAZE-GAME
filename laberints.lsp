@@ -4,8 +4,8 @@
 (defun main ()
   ; "Función principal para generar un laberinto y guardarlo en un archivo."
   (let ((nombre-archivo "laberinto.txt")   ; Nombre del archivo de salida
-        (filas 47)                         ; Número de filas del laberinto
-        (columnas 47))                     ; Número de columnas del laberinto
+        (filas 25)                         ; Número de filas del laberinto
+        (columnas 25))                     ; Número de columnas del laberinto
     (genera nombre-archivo filas columnas) ; Generar el laberinto
     (explora nombre-archivo)))             ; Explorar y dibujar el laberinto
 
