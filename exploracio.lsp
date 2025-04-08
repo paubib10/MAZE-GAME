@@ -88,7 +88,7 @@
 
 (defun llegir-moviment ()
   ; "Llegeix el moviment del jugador des del teclat amb get-key."
-  (format t "Mou-te amb WASD o ESC per sortir: ")
+  (format t "Mou-te amb WASD o ESC per sortir.")
   (let ((tecla (get-key)))
     (cond
      ((or (= tecla 65) (= tecla 97) (= tecla 331)) 'esquerra) ; A o ←

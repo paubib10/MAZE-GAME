@@ -40,23 +40,13 @@
                           laberinto)
                   (list fila-borde)))))
 
-;;; Seleccionar entrada en el borde
 (defun seleccionar-entrada (laberinto n m)
-  "Selecciona una posición aleatoria en el borde del laberinto como entrada"
-  (let ((borde (random 4)))
-    (cond ((= borde 0) (list 0 (random-entre 1 (- m 2))))        ; Borde superior
-          ((= borde 1) (list (random-entre 1 (- n 2)) (- m 1))) ; Borde derecho
-          ((= borde 2) (list (- n 1) (random-entre 1 (- m 2)))) ; Borde inferior
-          (t (list (random-entre 1 (- n 2)) 0)))))              ; Borde izquierdo
+  "Selecciona una posición aleatoria dentro del laberinto como entrada."
+  (list (random n) (random m)))
 
-;;; Seleccionar salida en el borde
 (defun seleccionar-salida (laberinto n m)
-  "Selecciona una posición aleatoria en el borde del laberinto como salida"
-  (let ((borde (random 4)))
-    (cond ((= borde 0) (list 0 (random-entre 1 (- m 2))))        ; Borde superior
-          ((= borde 1) (list (random-entre 1 (- n 2)) (- m 1))) ; Borde derecho
-          ((= borde 2) (list (- n 1) (random-entre 1 (- m 2)))) ; Borde inferior
-          (t (list (random-entre 1 (- n 2)) 0)))))           ; Borde izquierdo
+  "Selecciona una posición aleatoria dentro del laberinto como salida."
+  (list (random n) (random m)))
 
 (defun random-entre (min max)
   (+ min (random (+ (- max min) 1))))
