@@ -170,32 +170,44 @@
         (t (cons (car fila) 
                  (reemplazar-en-fila (cdr fila) (- col 1) valor)))))
 
-;;; Guardar laberinto en archivo sin usar with-open-file
-(defun guardar-laberinto (nombre-archivo laberinto)
-  (let ((archivo (open nombre-archivo :direction :output :if-exists :supersede)))
-    (unwind-protect
-        (progn
-          (princ (laberinto-a-texto laberinto) archivo)) ; Escribir el contenido en el archivo
-      (close archivo)))) ; Asegurar que el archivo se cierre
+;------------------- ESCRIBIR LABERINTO EN ARCHIVO -------------------
+(defun guardar-laberinto (nom-fitxer laberint)
+  "Escribe un laberinto directamente en un archivo de texto."
+  (let ((fp (open nom-fitxer :direction :output :if-exists :supersede :if-does-not-exist :create)))
+    (cond
+     (fp
+      (escriu-laberint-rec laberint fp)
+      (close fp))
+     (t (format t "Error: No se pudo abrir el archivo ~A~%" nom-fitxer)))))
 
-;;; Convertir el laberinto a una cadena de texto
-(defun laberinto-a-texto (laberinto)
-  (cond ((null laberinto) "") ; Caso base: laberinto vacío
-        (t (concatenate 'string
-                        (fila-a-texto (car laberinto)) "\n"
-                        (laberinto-a-texto (cdr laberinto))))))
+(defun escriu-laberint-rec (laberint fp)
+  "Escribe cada fila del laberinto en el archivo recursivamente."
+  (cond
+   ((null laberint) nil) ; Caso base: no hay más filas
+   (t (escriu-fila (car laberint) fp)
+      (write-char #\Newline fp) ; Salto de línea después de cada fila
+      (escriu-laberint-rec (cdr laberint) fp))))
 
-;;; Convertir una fila del laberinto a una cadena de texto
-(defun fila-a-texto (fila)
-  (cond ((null fila) "") ; Caso base: fila vacía
-        (t (concatenate 'string
-                        (celda-a-caracter (car fila))
-                        (fila-a-texto (cdr fila))))))
+(defun escriu-laberint-rec (laberint fp)
+  "Escribe cada fila del laberinto en el archivo recursivamente."
+  (cond
+   ((null laberint) nil) ; Caso base: no hay más filas
+   (t (escriu-fila (car laberint) fp)
+      (write-char #\Newline fp) ; Salto de línea después de cada fila
+      (escriu-laberint-rec (cdr laberint) fp))))
 
-;;; Convertir una celda a su representación de texto
+(defun escriu-fila (fila fp)
+  "Escribe cada celda de una fila en el archivo recursivamente."
+  (cond
+   ((null fila) nil) ; Caso base: fila vacía
+   (t (write-char (celda-a-caracter (car fila)) fp)
+      (escriu-fila (cdr fila) fp))))
+
 (defun celda-a-caracter (celda)
-  (cond ((eq celda 'paret) "#")
-        ((eq celda 'cami) ".")
-        ((eq celda 'entrada) "e")
-        ((eq celda 'sortida) "s")
-        (t " "))) ; Celda desconocida
+  "Convierte una celda en su representación de texto."
+  (cond
+   ((eq celda 'paret) #\#)
+   ((eq celda 'cami) #\.)
+   ((eq celda 'entrada) #\e)
+   ((eq celda 'sortida) #\s)
+   (t #\ ))) ; Celda desconocida
