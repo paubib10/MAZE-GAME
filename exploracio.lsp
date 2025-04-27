@@ -8,7 +8,7 @@
          (posicio-meta (buscar-posicion laberint 'sortida)))
     (cond
      ((or (null posicio-jugador) (null posicio-meta))
-      (format t "El laberint no te entrada o sortida valides.~%"))
+      (format t "El laberint no té entrada o sortida vàlides.~%"))
      (t
       (cls)
       (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)))))
@@ -23,7 +23,8 @@
       (format t "Has sortit de l'exploracio.~%"))
      ((es-meta? posicio-jugador posicio-meta)
       (format t "Enhorabona, ~A! Has arribat a la meta en ~A passes.~%" nom-jugador passes)
-      (guardar-nom-i-passes passes nom-fitxer nom-jugador))
+      (guardar-nom-i-passes passes nom-fitxer nom-jugador)
+      (mostrar-classificacio nom-fitxer))
      ((moviment-valid? laberint posicio-jugador moviment)
       (explora-rec laberint
                    (moure-jugador posicio-jugador moviment)
@@ -82,17 +83,63 @@
    ((eq (car fila) simbolo) (list fila-index col-index))
    (t (buscar-en-fila (cdr fila) simbolo fila-index (+ col-index 1)))))
 
-; -------------------------- CLASSIFICACIO --------------------------
+; -------------------------- GUARDAR CLASSIFICACIO --------------------------
 (defun guardar-nom-i-passes (passes nom-fitxer nom-jugador)
-  "Guarda el nom del jugador, passes i nom del fitxer al fitxer de classificació."
-  (let ((fitxer "clasificacion.txt"))
+  "Guarda el número de pasos, el nombre del jugador y el nombre del fichero en el archivo de clasificación."
+  (let ((fitxer (format nil "~A_classificacio.txt" nom-fitxer)))
     (let ((fp (open fitxer :direction :output :if-exists :append :if-does-not-exist :create)))
       (cond
        (fp
-        (format fp "~A: ~A passes (Mapa: ~A)~%" nom-jugador passes nom-fitxer)
+        (format fp "~S~%" (list passes nom-jugador nom-fitxer)) ; Guarda como lista
         (close fp)
         (format t "S'ha guardat el teu nom, passes i mapa al fitxer ~A.~%" fitxer))
        (t (format t "Error: No s'ha pogut obrir el fitxer ~A.~%" fitxer))))))
+
+; -------------------------- MOSTRAR CLASSIFICACIO --------------------------
+(defun mostrar-classificacio (nom-fitxer)
+  "Mostra les 10 millors exploracions del laberint especificat."
+  (let ((fitxer (format nil "~A_classificacio.txt" nom-fitxer)))
+    (let ((classificacio (carregar-classificacio fitxer)))
+      (format t "Classificació de les 10 millors exploracions de ~A:~%" nom-fitxer)
+      (mostrar-entrades classificacio 10))))
+
+(defun mostrar-entrades (classificacio n)
+  "Mostra les primeres n entrades de la classificació."
+  (cond
+   ((or (null classificacio) (<= n 0)) nil)
+   (t (let ((entrada (car classificacio)))
+        (format t "~A passes: ~A (Mapa: ~A)~%" (car entrada) (cadr entrada) (caddr entrada))
+        (mostrar-entrades (cdr classificacio) (- n 1))))))
+
+(defun carregar-classificacio (fitxer)
+  "Carrega la classificació des del fitxer i retorna una llista ordenada per passes."
+  (let ((fp (open fitxer :direction :input)))
+    (cond
+     (fp
+      (let ((classificacio (carregar-linies-rec fp)))
+        (close fp)
+        (ordenar-classificacio classificacio)))
+     (t (error "No s'ha pogut obrir el fitxer ~A." fitxer)))))
+
+(defun carregar-linies-rec (fp)
+  "Llegeix les línies del fitxer recursivament i les converteix en una llista."
+  (let ((linia (read fp nil)))
+    (cond
+     (linia (cons linia (carregar-linies-rec fp)))
+     (t nil))))
+
+(defun ordenar-classificacio (classificacio)
+  "Ordena la llista de classificació per passes utilitzant recursió."
+  (cond
+   ((null classificacio) nil)
+   (t (insertar-ordenado (car classificacio) (ordenar-classificacio (cdr classificacio))))))
+
+(defun insertar-ordenado (entrada lista)
+  "Insereix una entrada en una llista ordenada per passes."
+  (cond
+   ((null lista) (list entrada))
+   ((< (car entrada) (car (car lista))) (cons entrada lista))
+   (t (cons (car lista) (insertar-ordenado entrada (cdr lista))))))
 
 ;-------------------------- MOVIMENT DEL JUGADOR ------------------------
 (defun llegir-moviment ()

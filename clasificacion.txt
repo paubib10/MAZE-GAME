@@ -1,3 +1,0 @@
-Bibiloni: 18 passes (Mapa: maze_10x10.txt)
-Martinez: 18 passes (Mapa: maze_10x10.txt)
-Pau: 22 passes (Mapa: maze_10x10.txt)
