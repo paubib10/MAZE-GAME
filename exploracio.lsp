@@ -39,14 +39,14 @@
 
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nom-fitxer)
-  ; "Carga el laberinto desde un archivo de texto y lo convierte en una lista de listas."
+  "Carga el laberinto desde un archivo de texto y lo convierte en una lista de listas."
   (let ((fp (open nom-fitxer :direction :input)))
     (let ((laberinto (cargar-lineas-rec fp)))
       (close fp)
       laberinto)))
 
 (defun cargar-lineas-rec (fp)
-  ; "Lee las líneas del archivo y las convierte en listas de símbolos recursivamente."
+  "Lee las líneas del archivo y las convierte en listas de símbolos recursivamente."
   (let ((caracter (read-char fp nil 'eof)))
     (cond
      ((eq caracter 'eof) nil) ; Si es el final del archivo, termina
@@ -57,7 +57,7 @@
         (cons linea (cargar-lineas-rec fp)))))))
 
 (defun cargar-linea-rec (fp acumulador)
-  ; "Lee caracteres de una línea y los convierte en símbolos recursivamente."
+  "Lee caracteres de una línea y los convierte en símbolos recursivamente."
   (let ((caracter (read-char fp nil 'eof)))
     (cond
      ((eq caracter 'eof) (reverse acumulador)) ; Fin del archivo
@@ -66,11 +66,11 @@
 
 ; -------------------------- BUSCAR_POSICION -----------------------------
 (defun buscar-posicion (laberinto simbolo)
-  ; "Busca la posición de un símbolo en el laberinto."
+  "Busca la posición de un símbolo en el laberinto."
   (buscar-en-laberinto laberinto simbolo 0))
 
 (defun buscar-en-laberinto (laberinto simbolo fila-index)
-  ; "Busca el símbolo en el laberinto fila por fila."
+  "Busca el símbolo en el laberinto fila por fila."
   (cond
    ((null laberinto) nil)
    (t (let ((pos (buscar-en-fila (car laberinto) simbolo fila-index 0)))
@@ -79,7 +79,7 @@
          (t (buscar-en-laberinto (cdr laberinto) simbolo (+ fila-index 1))))))))
 
 (defun buscar-en-fila (fila simbolo fila-index col-index)
-  ; "Busca el símbolo en una fila específica."
+  "Busca el símbolo en una fila específica."
   (cond
    ((null fila) nil)
    ((eq (car fila) simbolo) (list fila-index col-index))
