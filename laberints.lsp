@@ -40,3 +40,5 @@
     (let ((nom-fitxer (read-line)))
       (explora nom-fitxer nom-jugador)
       (menu))))
+
+; Author: Pau Toni Bibiloni Martínez
