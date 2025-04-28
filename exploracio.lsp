@@ -100,7 +100,7 @@
   "Mostra les 10 millors exploracions del laberint especificat."
   (let ((fitxer (format nil "~A_classificacio.txt" nom-fitxer)))
     (let ((classificacio (carregar-classificacio fitxer)))
-      (format t "Classificació de les 10 millors exploracions de ~A:~%" nom-fitxer)
+      (format t "Classificacio de les 10 millors exploracions de ~A:~%" nom-fitxer)
       (mostrar-entrades classificacio 10))))
 
 (defun mostrar-entrades (classificacio n)
