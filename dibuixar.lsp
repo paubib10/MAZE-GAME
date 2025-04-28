@@ -38,7 +38,7 @@
 (defun dibujar-celda (x y tipo celda-tam)
   ; "Dibuja una celda en la posición (x, y) con el tipo especificado."
   (cond
-   ((eq tipo 'paret) (color 0 0 0))       ; Negro para paredes
+   ((eq tipo 'paret) (color 0 0 0))      ; Negro para paredes
    ((eq tipo 'cami) (color 255 255 255)) ; Blanco para caminos
    ((eq tipo 'entrada) (color 0 0 255))  ; Azul para la entrada
    ((eq tipo 'sortida) (color 255 0 0))  ; Rojo para la salida

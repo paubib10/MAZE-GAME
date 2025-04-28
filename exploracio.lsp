@@ -20,8 +20,10 @@
   (let ((moviment (llegir-moviment)))
     (cond
      ((eq moviment 'sortir)
+      (color 0 0 0)
       (format t "Has sortit de l'exploracio.~%"))
      ((es-meta? posicio-jugador posicio-meta)
+      (color 0 0 0)
       (format t "Enhorabona, ~A! Has arribat a la meta en ~A passes.~%" nom-jugador passes)
       (guardar-nom-i-passes passes nom-fitxer nom-jugador)
       (mostrar-classificacio nom-fitxer))
