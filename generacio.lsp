@@ -59,13 +59,12 @@
         (let ((laberinto-generado (dfs-generar-laberinto laberinto-con-entrada entrada n-reducido m-reducido)))
           (let ((salida (seleccionar-salida laberinto-generado n-reducido m-reducido)))
             (let ((laberinto-final (colocar-salida laberinto-generado salida)))
-              ;; Asegurarse de que la entrada no se sobrescriba
               (let ((laberinto-final-con-entrada (colocar-entrada laberinto-final entrada)))
                 (let ((laberinto-con-bordes (agregar-bordes laberinto-final-con-entrada)))
                   (guardar-laberinto nom-fitxer laberinto-con-bordes)
                   laberinto-con-bordes)))))))))
 
-+(defun crear-laberinto-vacio (n m)
+(defun crear-laberinto-vacio (n m)
   "Crea una lista de N listas con M paredes cada una"
   (construir-filas n m))
 

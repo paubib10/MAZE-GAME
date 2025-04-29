@@ -12,9 +12,8 @@
 ; ---------------------------- EXPLORA -------------------------------
 (defun explora (nom-fitxer)
   "Inicia l'exploració del laberint carregat des de nom-fitxer."
-  (format t "Introdueix el teu nom: ")
-  (let ((nom-jugador (read-line))) ; Solicita el nombre del jugador
-    (let* ((laberint (reverse (cargar-laberinto nom-fitxer))) ; Aplica reverse aquí
+  (let ((nom-jugador (solicitar-nombre-jugador))) ; Llama al submétodo para obtener el nombre
+    (let* ((laberint (reverse (cargar-laberinto nom-fitxer)))
            (posicio-jugador (buscar-posicion laberint 'entrada))
            (posicio-meta (buscar-posicion laberint 'sortida))
            (ancho-ventana 500) ; Define el ancho de la ventana gráfica
@@ -45,6 +44,15 @@
      (t
       (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)))))
 
+(defun solicitar-nombre-jugador ()
+  "Solicita el nombre del jugador y valida que no esté vacío."
+  (let ((nom-jugador (read-line))) ; Lee el nombre del jugador
+    (cond
+     ((and nom-jugador (not (equal nom-jugador ""))) nom-jugador) ; Si el nombre es válido, lo devuelve
+     (t
+      (format t "Introdueix el teu nom: ") ; Vuelve a mostrar el mensaje
+      (solicitar-nombre-jugador))))) ; Llama recursivamente hasta obtener un nombre válido
+        
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nom-fitxer)
   "Carga el laberinto desde un archivo de texto y lo convierte en una lista de listas."
