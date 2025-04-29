@@ -7,6 +7,52 @@
 ; Convocatoria: Ordinaria
 ; ------------------------------------------------------------
 
+; ---------------------- INSTRUCCIONES -----------------------
+; Este archivo contiene las funciones necesarias para explorar laberintos.
+; 
+; Pasos para usar las funciones:
+; 1. Cargar el archivo:
+;    - Ejecuta el comando: (load "exploracio.lsp")
+;    - Esto cargará todas las funciones necesarias para explorar laberintos.
+;
+; 2. Explorar un laberinto:
+;    - Función: (explora nom-fitxer)
+;    - Parámetros:
+;        * nom-fitxer: Nombre del archivo que contiene el laberinto.
+;    - Ejemplo: (explora "laberint.txt")
+;      Esto permitirá al usuario explorar el laberinto guardado en "laberint.txt".
+;      El programa pedirá al usuario que introduzca su nombre antes de comenzar.
+;
+; ------------------ ASPECTOS OPCIONALES ---------------------
+; 1. Guardado de clasificación:
+;    - Implementado en la función (guardar-nom-i-passes).
+;    - Guarda el nombre del jugador, el número de pasos y el nombre del archivo en un archivo de clasificación.
+;
+; 2. Visualización de clasificación:
+;    - Implementado en la función (mostrar-classificacio).
+;    - Muestra las 10 mejores exploraciones de un laberinto específico.
+;
+; 3. Validación de movimientos:
+;    - Implementado en la función (moviment-valid?).
+;    - Comprueba si un movimiento es válido antes de actualizar la posición del jugador.
+;
+; ------------------ DISEÑO FUNCIONAL ------------------------
+; El programa está diseñado para permitir la exploración de laberintos de manera interactiva:
+; 1. Carga del laberinto:
+;    - Se utiliza la función (cargar-laberinto) para leer un archivo de texto y convertirlo en una estructura de datos.
+;
+; 2. Exploración del laberinto:
+;    - La función principal (explora) inicia la exploración del laberinto.
+;    - La función recursiva (explora-rec) gestiona los movimientos del jugador y las condiciones de salida.
+;
+; 3. Movimientos del jugador:
+;    - Se utilizan las funciones (llegir-moviment), (moviment-valid?) y (moure-jugador) para gestionar los movimientos.
+;
+; 4. Clasificación:
+;    - Se guarda y muestra la clasificación de los jugadores que han explorado el laberinto.
+;
+; ------------------------------------------------------------
+
 (load "dibuixar.lsp")
 
 ; ---------------------------- EXPLORA -------------------------------

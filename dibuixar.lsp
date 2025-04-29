@@ -6,6 +6,65 @@
 ; Profesores: Antoni Oliver Tomàs
 ; Convocatoria: Ordinaria
 ; ------------------------------------------------------------
+  
+; ---------------------- INSTRUCCIONES -----------------------
+; Este archivo contiene las funciones necesarias para dibujar el laberinto y sus elementos.
+; 
+; Nota importante:
+; - Esta clase no tiene un método funcional principal.
+; - Sus funciones son auxiliares y están diseñadas para ser utilizadas en la clase `exploracio`.
+;
+; Pasos para usar las funciones:
+; 1. Cargar el archivo:
+;    - Ejecuta el comando: (load "dibuixar.lsp")
+;    - Esto cargará todas las funciones necesarias para dibujar el laberinto.
+;
+; 2. Dibujar el laberinto completo:
+;    - Función: (dibujar-laberinto laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
+;    - Parámetros:
+;        * laberint: Estructura del laberinto como lista de listas.
+;        * posicio-jugador: Posición inicial del jugador en el laberinto.
+;        * posicio-meta: Posición de la meta en el laberinto.
+;        * ancho-ventana: Ancho de la ventana gráfica.
+;        * alto-ventana: Alto de la ventana gráfica.
+;    - Ejemplo: (dibujar-laberinto laberint '(0 0) '(9 9) 500 500)
+;      Esto dibujará el laberinto con el jugador en la posición `(0, 0)` y la meta en `(9, 9)`.
+;
+; 3. Dibujar una celda específica:
+;    - Función: (dibujar-celda x y tipo celda-tam)
+;    - Parámetros:
+;        * x, y: Coordenadas de la celda.
+;        * tipo: Tipo de celda ('paret, 'cami, 'entrada, 'sortida, 'jugador).
+;        * celda-tam: Tamaño de la celda.
+;    - Ejemplo: (dibujar-celda 50 50 'jugador 20)
+;      Esto dibujará una celda de tipo jugador en la posición `(50, 50)` con tamaño 20.
+;
+; ------------------ ASPECTOS OPCIONALES ---------------------
+; 1. Ajuste dinámico del tamaño de las celdas:
+;    - Implementado en la función (calcular-celda-tam).
+;    - Calcula el tamaño de las celdas para que el laberinto se ajuste al tamaño de la ventana gráfica.
+;
+; 2. Representación gráfica de elementos:
+;    - Cada tipo de celda tiene un color específico:
+;        * Negro para paredes ('paret).
+;        * Blanco para caminos ('cami).
+;        * Azul para la entrada ('entrada).
+;        * Rojo para la salida ('sortida).
+;        * Verde para el jugador ('jugador).
+;
+; ------------------ DISEÑO FUNCIONAL ------------------------
+; El programa está diseñado para dibujar el laberinto y sus elementos de manera eficiente:
+; 1. Dibujar el laberinto completo:
+;    - Se utiliza la función (dibujar-laberinto) para recorrer y dibujar todas las filas y columnas del laberinto.
+;    - Las funciones (dibujar-filas) y (dibujar-columnas) manejan la recursión para dibujar cada celda.
+;
+; 2. Dibujar celdas individuales:
+;    - La función (dibujar-celda) se encarga de dibujar una celda específica con el color y tamaño adecuados.
+;
+; 3. Ajuste dinámico:
+;    - La función (calcular-celda-tam) asegura que las celdas se ajusten al tamaño de la ventana gráfica.
+;
+; ------------------------------------------------------------
 
 (defun dibujar-celda-jugador (posicio laberint ancho-ventana alto-ventana)
   "Dibuja la celda del jugador en su nueva posición."
