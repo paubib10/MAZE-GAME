@@ -1,16 +1,27 @@
+; ------------------- BLOQUE DE COMENTARIO -------------------
+; Autores: Pau Toni Bibiloni Martínez & Hugo Guerreiro Paredes
+; Fecha: 29 de abril de 2025
+; Asignatura: Lenguajes de Programación
+; Grupo: 3
+; Profesores: Antoni Oliver Tomàs
+; Convocatoria: Ordinaria
+; ------------------------------------------------------------
+
 (load "dibuixar.lsp")
 
 ; ---------------------------- EXPLORA -------------------------------
-(defun explora (nom-fitxer nom-jugador &optional (viewport nil) (passes 0))
+(defun explora (nom-fitxer)
   "Inicia l'exploració del laberint carregat des de nom-fitxer."
-  (let* ((laberint (reverse (cargar-laberinto nom-fitxer))) ; Aplica reverse aquí
-         (posicio-jugador (buscar-posicion laberint 'entrada))
-         (posicio-meta (buscar-posicion laberint 'sortida))
-         (ancho-ventana 500) ; Define el ancho de la ventana gráfica
-         (alto-ventana 375)) ; Define el alto de la ventana gráfica
-    (cls)
-    (dibujar-laberinto laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
-    (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)))
+  (format t "Introdueix el teu nom: ")
+  (let ((nom-jugador (read-line))) ; Solicita el nombre del jugador
+    (let* ((laberint (reverse (cargar-laberinto nom-fitxer))) ; Aplica reverse aquí
+           (posicio-jugador (buscar-posicion laberint 'entrada))
+           (posicio-meta (buscar-posicion laberint 'sortida))
+           (ancho-ventana 500) ; Define el ancho de la ventana gráfica
+           (alto-ventana 375)) ; Define el alto de la ventana gráfica
+      (cls)
+      (dibujar-laberinto laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
+      (explora-rec laberint posicio-jugador posicio-meta 0 nom-fitxer nom-jugador ancho-ventana alto-ventana))))
 
 (defun explora-rec (laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)
   "Funció recursiva per explorar el laberint."

@@ -1,8 +1,17 @@
+; ------------------- BLOQUE DE COMENTARIO -------------------
+; Autores: Pau Toni Bibiloni Martínez & Hugo Guerreiro Paredes
+; Fecha: 29 de abril de 2025
+; Asignatura: Lenguajes de Programación
+; Grupo: 3
+; Profesores: Antoni Oliver Tomàs
+; Convocatoria: Ordinaria
+; ------------------------------------------------------------
+
 (defun dibujar-celda-jugador (posicio laberint ancho-ventana alto-ventana)
   "Dibuja la celda del jugador en su nueva posición."
   (let ((x (first posicio))
         (y (second posicio))
-        (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint))) ; Tamaño dinámico de las celdas
+        (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-celda (* y celda-tam) (* x celda-tam) 'jugador celda-tam)))
 
 (defun actualizar-celda (laberint posicio ancho-ventana alto-ventana)
@@ -10,12 +19,12 @@
   (let* ((x (first posicio))
          (y (second posicio))
          (tipo (get-celda laberint x y)) ; Obtener el tipo original de la celda
-         (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint))) ; Tamaño dinámico de las celdas
+         (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-celda (* y celda-tam) (* x celda-tam) tipo celda-tam)))
 
 (defun dibujar-laberinto (laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
   "Dibuja todo el laberinto, incluyendo la posición del jugador y la meta."
-  (let ((celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint))) ; Tamaño dinámico de las celdas
+  (let ((celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-filas laberint 0 celda-tam posicio-jugador posicio-meta)))
 
 (defun dibujar-filas (laberint fila-index celda-tam posicio-jugador posicio-meta)

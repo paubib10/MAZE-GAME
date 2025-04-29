@@ -1,4 +1,54 @@
-;;; Función principal para generar el laberinto
+; ------------------- BLOQUE DE COMENTARIO -------------------
+; Autores: Pau Toni Bibiloni Martínez & Hugo Guerreiro Paredes
+; Fecha: 29 de abril de 2025
+; Asignatura: Lenguajes de Programación
+; Grupo: 3
+; Profesores: Antoni Oliver Tomàs
+; Convocatoria: Ordinaria
+; ------------------------------------------------------------
+
+; ---------------------- INSTRUCCIONES -----------------------
+; Este archivo contiene las funciones necesarias para generar laberintos.
+; 
+; Pasos para usar las funciones:
+; 1. Cargar el archivo:
+;    - Ejecuta el comando: (load "generacio.lsp")
+;    - Esto cargará todas las funciones necesarias para generar laberintos.
+;
+; 2. Generar un laberinto:
+;    - Función: (genera nom-fitxer files columnes)
+;    - Parámetros:
+;        * nom-fitxer: Nombre del archivo donde se guardará el laberinto.
+;        * files: Número de filas del laberinto.
+;        * columnes: Número de columnas del laberinto.
+;    - Ejemplo: (genera "laberint.txt" 10 10)
+;      Esto generará un laberinto de 10x10 y lo guardará en el archivo "laberint.txt".
+;
+; ------------------ ASPECTOS OPCIONALES ---------------------
+; 1. Generación aleatoria de entrada y salida:
+;    - Implementado en las funciones (seleccionar-entrada) y (seleccionar-salida).
+;    - Estas funciones seleccionan posiciones aleatorias dentro del laberinto para la entrada y la salida.
+;
+; 2. Algoritmo DFS para generar caminos:
+;    - Implementado en las funciones (dfs-generar-laberinto) y (dfs-visitar-vecinos).
+;    - Estas funciones generan caminos en el laberinto utilizando un algoritmo de búsqueda en profundidad (DFS).
+;
+; ------------------ DISEÑO FUNCIONAL ------------------------
+; El programa está diseñado para generar laberintos de manera eficiente y flexible:
+; 1. Creación del laberinto:
+;    - Se utiliza la función (crear-laberinto-vacio) para crear un laberinto inicial lleno de paredes.
+;    - Se añaden bordes al laberinto con la función (agregar-bordes).
+;
+; 2. Generación de caminos:
+;    - Se utiliza un algoritmo DFS para generar caminos aleatorios en el laberinto.
+;    - Las funciones (mezclar-direcciones) y (es-pared-valida) aseguran que los caminos sean válidos.
+;
+; 3. Escritura del laberinto en un archivo:
+;    - La función (guardar-laberinto) escribe el laberinto generado en un archivo de texto.
+;    - Cada celda del laberinto se convierte en un carácter con la función (celda-a-caracter).
+;
+; ------------------------------------------------------------
+
 (defun genera (nom-fitxer n m)
   "Genera un laberinto (n-2)x(m-2) usando DFS recursivo y lo guarda en archivo"
   (let* ((n-reducido (- n 2))
@@ -21,11 +71,13 @@
   (construir-filas n m))
 
 (defun construir-filas (filas columnas)
+  "Construye una lista de filas con columnas de paredes"
   (cond ((= filas 0) nil)
         (t (cons (construir-fila columnas)
                  (construir-filas (- filas 1) columnas)))))
 
 (defun construir-fila (columnas)
+  "Construye una fila con columnas de paredes"
   (cond ((= columnas 0) nil)
         (t (cons 'paret (construir-fila (- columnas 1))))))
 
@@ -48,21 +100,16 @@
   "Selecciona una posición aleatoria dentro del laberinto como salida."
   (list (random n) (random m)))
 
-(defun random-entre (min max)
-  (+ min (random (+ (- max min) 1))))
-
-;;; Colocar entrada en el laberinto
 (defun colocar-entrada (laberinto pos)
   "Coloca la entrada en la posición especificada"
   (reemplazar-posicion laberinto (car pos) (cadr pos) 'entrada))
 
-;;; Colocar salida en el laberinto
 (defun colocar-salida (laberinto pos)
   "Coloca la salida en la posición especificada"
   (reemplazar-posicion laberinto (car pos) (cadr pos) 'sortida))
 
-;;; Mezclar una lista de direcciones aleatoriamente
 (defun mezclar-direcciones (direcciones)
+  "Mezcla aleatoriamente una lista de direcciones."
   (cond
    ((null direcciones) nil) ; Caso base: lista vacía
    (t (let ((indice (random (length direcciones))))
@@ -70,14 +117,13 @@
               (resto (eliminar-indice indice direcciones)))
           (cons elemento (mezclar-direcciones resto)))))))
 
-;;; Eliminar un elemento de la lista por índice
 (defun eliminar-indice (indice lista)
+  "Elimina un elemento de la lista por indice."
   (cond
    ((null lista) nil) ; Caso base: lista vacía
    ((= indice 0) (cdr lista)) ; Si el índice es 0, elimina el primer elemento
    (t (cons (car lista) (eliminar-indice (- indice 1) (cdr lista))))))
 
-;;; Función DFS recursiva para generar caminos
 (defun dfs-generar-laberinto (laberinto pos-actual n m)
   "Genera caminos en el laberinto usando DFS."
   (let ((laberinto-actualizado (reemplazar-posicion laberinto (car pos-actual) (cadr pos-actual) 'cami)))
@@ -115,25 +161,27 @@
   (iterar-hasta col (iterar-hasta fila laberinto)))
 
 (defun iterar-hasta (n lista)
+  "Itera hasta el n-ésimo elemento de una lista."
   (cond ((= n 0) (car lista))
         (t (iterar-hasta (- n 1) (cdr lista)))))
 
-;;; Obtener celda del laberinto
 (defun obtener-celda (laberinto fila col)
-    (let ((fila-deseada (iterar-hasta fila laberinto)))
-        (iterar-hasta col fila-deseada)))
+  "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
+  (let ((fila-deseada (iterar-hasta fila laberinto)))
+       (iterar-hasta col fila-deseada)))
 
 (defun iterar-hasta (n lista)
-    (cond ((= n 0) (car lista))
-                (t (iterar-hasta (- n 1) (cdr lista)))))
+  "Itera hasta el n-ésimo elemento de una lista."
+  (cond ((= n 0) (car lista))
+        (t (iterar-hasta (- n 1) (cdr lista)))))
 
 (defun contar-celdas-camino-adyacentes (laberinto pos n m)
   "Cuenta cuántas celdas adyacentes son caminos válidos."
-  (let ((adyacentes (list (list (- (car pos) 1) (cadr pos)) ; Arriba
-                          (list (+ (car pos) 1) (cadr pos)) ; Abajo
-                          (list (car pos) (- (cadr pos) 1)) ; Izquierda
+  (let ((adyacentes (list (list (- (car pos) 1) (cadr pos))    ; Arriba
+                          (list (+ (car pos) 1) (cadr pos))    ; Abajo
+                          (list (car pos) (- (cadr pos) 1))    ; Izquierda
                           (list (car pos) (+ (cadr pos) 1))))) ; Derecha
-    (contar-celdas-camino-adyacentes-rec laberinto adyacentes n m 0)))
+       (contar-celdas-camino-adyacentes-rec laberinto adyacentes n m 0)))
 
 (defun contar-celdas-camino-adyacentes-rec (laberinto adyacentes n m contador)
   "Cuenta recursivamente las celdas adyacentes que son caminos."
@@ -145,17 +193,19 @@
    (t
     (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) n m contador))))
 
-;;; Reemplazar celda en el laberinto
 (defun reemplazar-posicion (laberinto fila col valor)
+  "Reemplaza el valor de una celda en el laberinto."
   (reemplazar-fila laberinto fila 
     (reemplazar-en-fila (nth fila laberinto) col valor)))
 
 (defun reemplazar-fila (laberinto fila nueva-fila)
+  "Reemplaza una fila en el laberinto."
   (cond ((= fila 0) (cons nueva-fila (cdr laberinto)))
         (t (cons (car laberinto) 
                  (reemplazar-fila (cdr laberinto) (- fila 1) nueva-fila)))))
 
 (defun reemplazar-en-fila (fila col valor)
+  "Reemplaza el valor de una celda en una fila."
   (cond ((= col 0) (cons valor (cdr fila)))
         (t (cons (car fila) 
                  (reemplazar-en-fila (cdr fila) (- col 1) valor)))))
