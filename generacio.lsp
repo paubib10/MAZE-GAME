@@ -65,8 +65,7 @@
                   (guardar-laberinto nom-fitxer laberinto-con-bordes)
                   laberinto-con-bordes)))))))))
 
-;;; Crear laberinto vacío como lista de listasx 
-(defun crear-laberinto-vacio (n m)
++(defun crear-laberinto-vacio (n m)
   "Crea una lista de N listas con M paredes cada una"
   (construir-filas n m))
 
@@ -81,10 +80,9 @@
   (cond ((= columnas 0) nil)
         (t (cons 'paret (construir-fila (- columnas 1))))))
 
-;;; Agregar bordes al laberinto
 (defun agregar-bordes (laberinto)
   "Agrega una capa de paredes alrededor del laberinto"
-  (let* ((ancho (+ 2 (length (car laberinto))))
+  (let* ((ancho (+ 2 (contar-elementos (car laberinto))))
          (fila-borde (construir-fila ancho)))
     (cons fila-borde
           (append (mapcar (lambda (fila)
@@ -112,8 +110,8 @@
   "Mezcla aleatoriamente una lista de direcciones."
   (cond
    ((null direcciones) nil) ; Caso base: lista vacía
-   (t (let ((indice (random (length direcciones))))
-        (let ((elemento (nth indice direcciones))
+   (t (let ((indice (random (contar-elementos direcciones))))
+        (let ((elemento (obtener-elemento direcciones indice))
               (resto (eliminar-indice indice direcciones)))
           (cons elemento (mezclar-direcciones resto)))))))
 
@@ -123,6 +121,13 @@
    ((null lista) nil) ; Caso base: lista vacía
    ((= indice 0) (cdr lista)) ; Si el índice es 0, elimina el primer elemento
    (t (cons (car lista) (eliminar-indice (- indice 1) (cdr lista))))))
+
+(defun obtener-elemento (lista indice)
+  "Obtiene el elemento en la posición `indice` de una lista de forma recursiva."
+  (cond
+   ((null lista) nil) ; Caso base: lista vacía
+   ((= indice 0) (car lista)) ; Caso base: índice 0, devuelve el primer elemento
+   (t (obtener-elemento (cdr lista) (- indice 1))))) ; Llamada recursiva
 
 (defun dfs-generar-laberinto (laberinto pos-actual n m)
   "Genera caminos en el laberinto usando DFS."
@@ -159,11 +164,6 @@
 (defun get-celda (laberinto fila col)
   "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
   (iterar-hasta col (iterar-hasta fila laberinto)))
-
-(defun iterar-hasta (n lista)
-  "Itera hasta el n-ésimo elemento de una lista."
-  (cond ((= n 0) (car lista))
-        (t (iterar-hasta (- n 1) (cdr lista)))))
 
 (defun obtener-celda (laberinto fila col)
   "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
@@ -251,3 +251,10 @@
    ((eq celda 'entrada) #\e)
    ((eq celda 'sortida) #\s)
    (t #\ ))) ; Celda desconocida
+
+ ; ------------------ FUNCIONES AUXILIARES -------------------
+ (defun contar-elementos (lista)
+  "Cuenta los elementos de una lista de forma recursiva."
+  (cond
+   ((null lista) 0)
+   (t (+ 1 (contar-elementos (cdr lista))))))

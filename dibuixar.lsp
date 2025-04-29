@@ -71,8 +71,7 @@
  (drawrel 0 (- m))
  (cond ((> m 0) (moverel 1 1) (quadrat (- m 1)))))
 
- ; Funciones auxiliares
-
+ ; ------------------ FUNCIONES AUXILIARES -------------------
  (defun contar-elementos (lista)
   "Cuenta los elementos de una lista de forma recursiva."
   (cond
