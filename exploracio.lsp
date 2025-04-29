@@ -3,39 +3,36 @@
 ; ---------------------------- EXPLORA -------------------------------
 (defun explora (nom-fitxer nom-jugador &optional (viewport nil) (passes 0))
   "Inicia l'exploració del laberint carregat des de nom-fitxer."
-  (let* ((laberint (cargar-laberinto nom-fitxer))
+  (let* ((laberint (reverse (cargar-laberinto nom-fitxer))) ; Aplica reverse aquí
          (posicio-jugador (buscar-posicion laberint 'entrada))
-         (posicio-meta (buscar-posicion laberint 'sortida)))
-    (cond
-     ((or (null posicio-jugador) (null posicio-meta))
-      (format t "El laberint no té entrada o sortida vàlides.~%"))
-     (t
-      (cls)
-      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)))))
+         (posicio-meta (buscar-posicion laberint 'sortida))
+         (ancho-ventana 500) ; Define el ancho de la ventana gráfica
+         (alto-ventana 375)) ; Define el alto de la ventana gráfica
+    (cls)
+    (dibujar-laberinto laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
+    (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)))
 
-(defun explora-rec (laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)
+(defun explora-rec (laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)
   "Funció recursiva per explorar el laberint."
-  (cls)
-  (dibujar-laberinto laberint posicio-jugador posicio-meta)
   (let ((moviment (llegir-moviment)))
     (cond
      ((eq moviment 'sortir)
       (color 0 0 0)
+      (cls)
       (format t "Has sortit de l'exploracio.~%"))
      ((es-meta? posicio-jugador posicio-meta)
       (color 0 0 0)
+      (cls)
       (format t "Enhorabona, ~A! Has arribat a la meta en ~A passes.~%" nom-jugador passes)
       (guardar-nom-i-passes passes nom-fitxer nom-jugador)
       (mostrar-classificacio nom-fitxer))
      ((moviment-valid? laberint posicio-jugador moviment)
-      (explora-rec laberint
-                   (moure-jugador posicio-jugador moviment)
-                   posicio-meta
-                   (+ passes 1)
-                   nom-fitxer
-                   nom-jugador))
+      (let ((nova-posicio (moure-jugador posicio-jugador moviment)))
+        (actualizar-celda laberint posicio-jugador ancho-ventana alto-ventana)
+        (dibujar-celda-jugador nova-posicio laberint ancho-ventana alto-ventana)
+        (explora-rec laberint nova-posicio posicio-meta (+ passes 1) nom-fitxer nom-jugador ancho-ventana alto-ventana)))
      (t
-      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador)))))
+      (explora-rec laberint posicio-jugador posicio-meta passes nom-fitxer nom-jugador ancho-ventana alto-ventana)))))
 
 ; -------------------------- CARGAR_LABERINTO ---------------------------
 (defun cargar-laberinto (nom-fitxer)
@@ -156,13 +153,13 @@
      (t nil))))                                              ; Qualsevol altra tecla
 
 (defun moviment-valid? (laberint posicio moviment)
-  ; "Comprova si el moviment és vàlid."
+  "Comprova si el moviment és vàlid."
   (let* ((x (first posicio))
          (y (second posicio))
          (nova-posicio
           (cond
-           ((eq moviment 'amunt) (list (- x 1) y))
-           ((eq moviment 'avall) (list (+ x 1) y))
+           ((eq moviment 'amunt) (list (+ x 1) y))    ; Cambiado: ahora suma para 'amunt'
+           ((eq moviment 'avall) (list (- x 1) y))    ; Cambiado: ahora resta para 'avall'
            ((eq moviment 'esquerra) (list x (- y 1)))
            ((eq moviment 'dreta) (list x (+ y 1)))
            (t posicio))))
@@ -175,12 +172,12 @@
              (eq (get-celda laberint (first nova-posicio) (second nova-posicio)) 'sortida))))) ; Permet moure's a 'sortida
 
 (defun moure-jugador (posicio moviment)
-  ; "Actualitza la posició del jugador segons el moviment."
+  "Actualitza la posició del jugador segons el moviment."
   (let ((x (first posicio))
         (y (second posicio)))
     (cond
-     ((eq moviment 'amunt) (list (- x 1) y))    ; Mou cap amunt (fila -1)
-     ((eq moviment 'avall) (list (+ x 1) y))    ; Mou cap avall (fila +1)
+     ((eq moviment 'amunt) (list (+ x 1) y))    ; Cambiado: ahora suma para 'amunt'
+     ((eq moviment 'avall) (list (- x 1) y))    ; Cambiado: ahora resta para 'avall'
      ((eq moviment 'esquerra) (list x (- y 1))) ; Mou cap a l'esquerra (columna -1)
      ((eq moviment 'dreta) (list x (+ y 1)))    ; Mou cap a la dreta (columna +1)
      (t posicio))))                             ; Si no és vàlid, no es mou
