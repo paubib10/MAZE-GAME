@@ -66,36 +66,65 @@
 ;
 ; ------------------------------------------------------------
 
+; Dibuja la celda del jugador en su nueva posición.
+; Parámetros:
+;   posicio        -> Lista (x y) con la posición del jugador.
+;   laberint       -> Laberinto como lista de listas.
+;   ancho-ventana  -> Ancho de la ventana gráfica.
+;   alto-ventana   -> Alto de la ventana gráfica.
 (defun dibujar-celda-jugador (posicio laberint ancho-ventana alto-ventana)
-  "Dibuja la celda del jugador en su nueva posición."
   (let ((x (first posicio))
         (y (second posicio))
         (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-celda (* y celda-tam) (* x celda-tam) 'jugador celda-tam)))
 
+; Redibuja la celda en su estado original (sin el jugador).
+; Parámetros:
+;   laberint       -> Laberinto como lista de listas.
+;   posicio        -> Lista (x y) con la posición a actualizar.
+;   ancho-ventana  -> Ancho de la ventana gráfica.
+;   alto-ventana   -> Alto de la ventana gráfica.
 (defun actualizar-celda (laberint posicio ancho-ventana alto-ventana)
-  "Redibuja la celda en su estado original (sin el jugador)."
   (let* ((x (first posicio))
          (y (second posicio))
          (tipo (get-celda laberint x y)) ; Obtener el tipo original de la celda
          (celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-celda (* y celda-tam) (* x celda-tam) tipo celda-tam)))
 
+; Dibuja todo el laberinto, incluyendo la posición del jugador y la meta.
+; Parámetros:
+;   laberint        -> Laberinto como lista de listas.
+;   posicio-jugador -> Lista (x y) con la posición del jugador.
+;   posicio-meta    -> Lista (x y) con la posición de la meta.
+;   ancho-ventana   -> Ancho de la ventana gráfica.
+;   alto-ventana    -> Alto de la ventana gráfica.
 (defun dibujar-laberinto (laberint posicio-jugador posicio-meta ancho-ventana alto-ventana)
-  "Dibuja todo el laberinto, incluyendo la posición del jugador y la meta."
   (let ((celda-tam (calcular-celda-tam ancho-ventana alto-ventana laberint)))
     (dibujar-filas laberint 0 celda-tam posicio-jugador posicio-meta)))
 
+; Dibuja todas las filas del laberinto recursivamente.
+; Parámetros:
+;   laberint        -> Laberinto como lista de listas.
+;   fila-index      -> Índice de la fila actual.
+;   celda-tam       -> Tamaño de cada celda.
+;   posicio-jugador -> Lista (x y) con la posición del jugador.
+;   posicio-meta    -> Lista (x y) con la posición de la meta.
 (defun dibujar-filas (laberint fila-index celda-tam posicio-jugador posicio-meta)
-  "Dibuja todas las filas del laberinto recursivamente."
   (cond
    ((null laberint) nil) ; Si no hay más filas, termina
    (t
     (dibujar-columnas (car laberint) fila-index 0 celda-tam posicio-jugador posicio-meta)
     (dibujar-filas (cdr laberint) (+ fila-index 1) celda-tam posicio-jugador posicio-meta))))
 
+; Dibuja todas las columnas de una fila recursivamente.
+; Parámetros:
+;   fila            -> Lista con los elementos de la fila.
+;   fila-index      -> Índice de la fila actual.
+;   col-index       -> Índice de la columna actual.
+;   celda-tam       -> Tamaño de cada celda.
+;   posicio-jugador -> Lista (x y) con la posición del jugador.
+;   posicio-meta    -> Lista (x y) con la posición de la meta.
 (defun dibujar-columnas (fila fila-index col-index celda-tam posicio-jugador posicio-meta)
-  "Dibuja todas las columnas de una fila recursivamente."
   (cond
    ((null fila) nil) ; Si no hay más columnas, termina
    (t
@@ -106,23 +135,35 @@
       (dibujar-celda (* col-index celda-tam) (* fila-index celda-tam) tipo celda-tam))
     (dibujar-columnas (cdr fila) fila-index (+ col-index 1) celda-tam posicio-jugador posicio-meta))))
 
+; Dibuja una celda en la posición (x, y) con el tipo especificado.
+; Parámetros:
+;   x         -> Coordenada x en la ventana.
+;   y         -> Coordenada y en la ventana.
+;   tipo      -> Tipo de celda ('paret, 'cami, 'entrada, 'sortida, 'jugador).
+;   celda-tam -> Tamaño de la celda.
 (defun dibujar-celda (x y tipo celda-tam)
-  "Dibuja una celda en la posición (x, y) con el tipo especificado."
   (cond
    ((eq tipo 'paret) (color 0 0 0))      ; Negro para paredes
    ((eq tipo 'cami) (color 255 255 255)) ; Blanco para caminos
    ((eq tipo 'entrada) (color 0 0 255))  ; Azul para la entrada
    ((eq tipo 'sortida) (color 255 0 0))  ; Rojo para la salida
    ((eq tipo 'jugador) (color 0 255 0))) ; Verde para el jugador
-  (move x y) ; Mueve el cursor a la posición (x, y)
-  (quadrat celda-tam)) ; Dibuja el cuadrado de la celda
+  (move x y)            ; Mueve el cursor a la posición (x, y)
+  (quadrat celda-tam))  ; Dibuja el cuadrado de la celda
 
+; Calcula el tamaño de las celdas dinámicamente para que el laberinto quepa en la ventana.
+; Parámetros:
+;   ancho-ventana -> Ancho de la ventana gráfica.
+;   alto-ventana  -> Alto de la ventana gráfica.
+;   laberinto     -> Laberinto como lista de listas.
 (defun calcular-celda-tam (ancho-ventana alto-ventana laberinto)
-  "Calcula el tamaño de las celdas dinámicamente para que el laberinto quepa en la ventana."
   (let ((filas (contar-elementos laberinto))
         (columnas (contar-elementos (car laberinto))))
     (floor (min (/ ancho-ventana columnas) (/ alto-ventana filas)))))
-    
+
+; Dibuja un cuadrado relleno de tamaño m en la posición actual.
+; Parámetros:
+;   m -> Tamaño del cuadrado.  
 (defun quadrat (m)
  (drawrel m 0)
  (drawrel 0 m)
@@ -130,9 +171,12 @@
  (drawrel 0 (- m))
  (cond ((> m 0) (moverel 1 1) (quadrat (- m 1)))))
 
- ; ------------------ FUNCIONES AUXILIARES -------------------
+; ------------------ FUNCIONES AUXILIARES -------------------
+
+; Cuenta los elementos de una lista de forma recursiva.
+; Parámetros:
+;   lista -> Lista a contar.
  (defun contar-elementos (lista)
-  "Cuenta los elementos de una lista de forma recursiva."
   (cond
    ((null lista) 0)
    (t (+ 1 (contar-elementos (cdr lista))))))

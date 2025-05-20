@@ -49,8 +49,12 @@
 ;
 ; ------------------------------------------------------------
 
+; Genera un laberinto de tamaño (n-2)x(m-2) usando DFS recursivo y lo guarda en un archivo.
+; Parámetros:
+;   nom-fitxer -> Nombre del archivo donde se guardará el laberinto.
+;   n          -> Número de filas totales (incluyendo bordes).
+;   m          -> Número de columnas totales (incluyendo bordes).
 (defun genera (nom-fitxer n m)
-  "Genera un laberinto (n-2)x(m-2) usando DFS recursivo y lo guarda en archivo"
   (let* ((n-reducido (- n 2))
          (m-reducido (- m 2))
          (laberinto (crear-laberinto-vacio n-reducido m-reducido)))
@@ -64,23 +68,33 @@
                   (guardar-laberinto nom-fitxer laberinto-con-bordes)
                   laberinto-con-bordes)))))))))
 
+; Crea una lista de N listas con M paredes cada una.
+; Parámetros:
+;   n -> Número de filas.
+;   m -> Número de columnas.
 (defun crear-laberinto-vacio (n m)
-  "Crea una lista de N listas con M paredes cada una"
   (construir-filas n m))
 
+; Construye una lista de filas, cada una con columnas de paredes.
+; Parámetros:
+;   filas    -> Número de filas.
+;   columnas -> Número de columnas por fila.
 (defun construir-filas (filas columnas)
-  "Construye una lista de filas con columnas de paredes"
   (cond ((= filas 0) nil)
         (t (cons (construir-fila columnas)
                  (construir-filas (- filas 1) columnas)))))
 
+; Construye una fila con columnas de paredes.
+; Parámetros:
+;   columnas -> Número de columnas en la fila.
 (defun construir-fila (columnas)
-  "Construye una fila con columnas de paredes"
   (cond ((= columnas 0) nil)
         (t (cons 'paret (construir-fila (- columnas 1))))))
 
+; Agrega una capa de paredes alrededor del laberinto.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
 (defun agregar-bordes (laberinto)
-  "Agrega una capa de paredes alrededor del laberinto"
   (let* ((ancho (+ 2 (contar-elementos (car laberinto))))
          (fila-borde (construir-fila ancho)))
     (cons fila-borde
@@ -89,24 +103,40 @@
                           laberinto)
                   (list fila-borde)))))
 
+; Selecciona una posición aleatoria dentro del laberinto como entrada.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   n         -> Número de filas internas.
+;   m         -> Número de columnas internas.
 (defun seleccionar-entrada (laberinto n m)
-  "Selecciona una posición aleatoria dentro del laberinto como entrada."
   (list (random n) (random m)))
 
+; Selecciona una posición aleatoria dentro del laberinto como salida.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   n         -> Número de filas internas.
+;   m         -> Número de columnas internas.
 (defun seleccionar-salida (laberinto n m)
-  "Selecciona una posición aleatoria dentro del laberinto como salida."
   (list (random n) (random m)))
 
+; Coloca la entrada en la posición especificada.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   pos       -> Lista (fila columna) con la posición de la entrada.
 (defun colocar-entrada (laberinto pos)
-  "Coloca la entrada en la posición especificada"
   (reemplazar-posicion laberinto (car pos) (cadr pos) 'entrada))
 
+; Coloca la salida en la posición especificada.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   pos       -> Lista (fila columna) con la posición de la salida.
 (defun colocar-salida (laberinto pos)
-  "Coloca la salida en la posición especificada"
   (reemplazar-posicion laberinto (car pos) (cadr pos) 'sortida))
 
+; Mezcla aleatoriamente una lista de direcciones.
+; Parámetros:
+;   direcciones -> Lista de direcciones (listas de dos elementos).
 (defun mezclar-direcciones (direcciones)
-  "Mezcla aleatoriamente una lista de direcciones."
   (cond
    ((null direcciones) nil) ; Caso base: lista vacía
    (t (let ((indice (random (contar-elementos direcciones))))
@@ -114,28 +144,45 @@
               (resto (eliminar-indice indice direcciones)))
           (cons elemento (mezclar-direcciones resto)))))))
 
+; Elimina un elemento de la lista por índice.
+; Parámetros:
+;   indice -> Índice del elemento a eliminar.
+;   lista  -> Lista de la que eliminar el elemento.
 (defun eliminar-indice (indice lista)
-  "Elimina un elemento de la lista por indice."
   (cond
    ((null lista) nil) ; Caso base: lista vacía
    ((= indice 0) (cdr lista)) ; Si el índice es 0, elimina el primer elemento
    (t (cons (car lista) (eliminar-indice (- indice 1) (cdr lista))))))
 
+; Obtiene el elemento en la posición `indice` de una lista de forma recursiva.
+; Parámetros:
+;   lista  -> Lista de la que obtener el elemento.
+;   indice -> Índice del elemento.
 (defun obtener-elemento (lista indice)
-  "Obtiene el elemento en la posición `indice` de una lista de forma recursiva."
   (cond
    ((null lista) nil) ; Caso base: lista vacía
    ((= indice 0) (car lista)) ; Caso base: índice 0, devuelve el primer elemento
    (t (obtener-elemento (cdr lista) (- indice 1))))) ; Llamada recursiva
 
+; Genera caminos en el laberinto usando DFS.
+; Parámetros:
+;   laberinto  -> Laberinto como lista de listas.
+;   pos-actual -> Posición actual (lista de dos elementos).
+;   n          -> Número de filas internas.
+;   m          -> Número de columnas internas.
 (defun dfs-generar-laberinto (laberinto pos-actual n m)
-  "Genera caminos en el laberinto usando DFS."
   (let ((laberinto-actualizado (reemplazar-posicion laberinto (car pos-actual) (cadr pos-actual) 'cami)))
     (let ((dirs (mezclar-direcciones '((0 -1) (1 0) (0 1) (-1 0))))) ; Direcciones: izquierda, abajo, derecha, arriba
       (dfs-visitar-vecinos laberinto-actualizado pos-actual dirs n m))))
 
+; Visita las celdas vecinas recursivamente usando DFS.
+; Parámetros:
+;   laberinto  -> Laberinto como lista de listas.
+;   pos-actual -> Posición actual.
+;   dirs       -> Lista de direcciones a visitar.
+;   n          -> Número de filas internas.
+;   m          -> Número de columnas internas.
 (defun dfs-visitar-vecinos (laberinto pos-actual dirs n m)
-  "Visita las celdas vecinas recursivamente usando DFS."
   (cond
    ((null dirs) laberinto) ; Caso base: no hay más direcciones
    (t (let ((dir (car dirs)))
@@ -149,41 +196,72 @@
                n m)
               (dfs-visitar-vecinos laberinto pos-actual (cdr dirs) n m)))))))
 
+; Verifica si una celda es una pared válida para ser convertida en camino.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   pos       -> Posición a comprobar.
+;   n         -> Número de filas internas.
+;   m         -> Número de columnas internas.
 (defun es-pared-valida (laberinto pos n m)
-  "Verifica si una celda es una pared válida para ser convertida en camino."
   (and (es-posicion-valida pos n m)
        (eq (obtener-celda laberinto (car pos) (cadr pos)) 'paret)
        (= (contar-celdas-camino-adyacentes laberinto pos n m) 1)))
 
+; Verifica si la posición está dentro de los límites del laberinto.
+; Parámetros:
+;   pos -> Lista (fila columna) con la posición.
+;   n   -> Número de filas internas.
+;   m   -> Número de columnas internas.
 (defun es-posicion-valida (pos n m)
-  "Verifica si la posición está dentro de los límites del laberinto."
   (and (>= (car pos) 0) (< (car pos) n)
        (>= (cadr pos) 0) (< (cadr pos) m)))
 
+; Obtiene el valor de la celda en la posición (fila, col) del laberinto.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   fila      -> Índice de la fila.
+;   col       -> Índice de la columna.
 (defun get-celda (laberinto fila col)
-  "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
   (iterar-hasta col (iterar-hasta fila laberinto)))
 
+; Obtiene el valor de la celda en la posición (fila, col) del laberinto.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   fila      -> Índice de la fila.
+;   col       -> Índice de la columna.
 (defun obtener-celda (laberinto fila col)
-  "Obtiene el valor de la celda en la posición (fila, col) del laberinto."
   (let ((fila-deseada (iterar-hasta fila laberinto)))
        (iterar-hasta col fila-deseada)))
 
+; Itera hasta el n-ésimo elemento de una lista.
+; Parámetros:
+;   n     -> Índice al que llegar.
+;   lista -> Lista sobre la que iterar.
 (defun iterar-hasta (n lista)
-  "Itera hasta el n-ésimo elemento de una lista."
   (cond ((= n 0) (car lista))
         (t (iterar-hasta (- n 1) (cdr lista)))))
 
+; Cuenta cuántas celdas adyacentes son caminos válidos.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   pos       -> Posición a comprobar.
+;   n         -> Número de filas internas.
+;   m         -> Número de columnas internas.
 (defun contar-celdas-camino-adyacentes (laberinto pos n m)
-  "Cuenta cuántas celdas adyacentes son caminos válidos."
   (let ((adyacentes (list (list (- (car pos) 1) (cadr pos))    ; Arriba
                           (list (+ (car pos) 1) (cadr pos))    ; Abajo
                           (list (car pos) (- (cadr pos) 1))    ; Izquierda
                           (list (car pos) (+ (cadr pos) 1))))) ; Derecha
        (contar-celdas-camino-adyacentes-rec laberinto adyacentes n m 0)))
 
+; Cuenta recursivamente las celdas adyacentes que son caminos.
+; Parámetros:
+;   laberinto  -> Laberinto como lista de listas.
+;   adyacentes -> Lista de posiciones adyacentes.
+;   n          -> Número de filas internas.
+;   m          -> Número de columnas internas.
+;   contador   -> Acumulador de caminos encontrados.
 (defun contar-celdas-camino-adyacentes-rec (laberinto adyacentes n m contador)
-  "Cuenta recursivamente las celdas adyacentes que son caminos."
   (cond
    ((null adyacentes) contador)
    ((and (es-posicion-valida (car adyacentes) n m)
@@ -192,26 +270,43 @@
    (t
     (contar-celdas-camino-adyacentes-rec laberinto (cdr adyacentes) n m contador))))
 
+; Reemplaza el valor de una celda en el laberinto.
+; Parámetros:
+;   laberinto -> Laberinto como lista de listas.
+;   fila      -> Índice de la fila.
+;   col       -> Índice de la columna.
+;   valor     -> Nuevo valor para la celda.
 (defun reemplazar-posicion (laberinto fila col valor)
-  "Reemplaza el valor de una celda en el laberinto."
   (reemplazar-fila laberinto fila 
     (reemplazar-en-fila (nth fila laberinto) col valor)))
 
+; Reemplaza una fila en el laberinto.
+; Parámetros:
+;   laberinto  -> Laberinto como lista de listas.
+;   fila       -> Índice de la fila a reemplazar.
+;   nueva-fila -> Nueva fila.
 (defun reemplazar-fila (laberinto fila nueva-fila)
-  "Reemplaza una fila en el laberinto."
   (cond ((= fila 0) (cons nueva-fila (cdr laberinto)))
         (t (cons (car laberinto) 
                  (reemplazar-fila (cdr laberinto) (- fila 1) nueva-fila)))))
 
+; Reemplaza el valor de una celda en una fila.
+; Parámetros:
+;   fila  -> Fila como lista.
+;   col   -> Índice de la columna.
+;   valor -> Nuevo valor para la celda.
 (defun reemplazar-en-fila (fila col valor)
-  "Reemplaza el valor de una celda en una fila."
   (cond ((= col 0) (cons valor (cdr fila)))
         (t (cons (car fila) 
                  (reemplazar-en-fila (cdr fila) (- col 1) valor)))))
 
 ;------------------- ESCRIBIR LABERINTO EN ARCHIVO -------------------
+
+; Escribe un laberinto directamente en un archivo de texto.
+; Parámetros:
+;   nom-fitxer -> Nombre del archivo de salida.
+;   laberint   -> Laberinto como lista de listas.
 (defun guardar-laberinto (nom-fitxer laberint)
-  "Escribe un laberinto directamente en un archivo de texto."
   (let ((fp (open nom-fitxer :direction :output :if-exists :supersede :if-does-not-exist :create)))
     (cond
      (fp
@@ -219,31 +314,31 @@
       (close fp))
      (t (format t "Error: No se pudo abrir el archivo ~A~%" nom-fitxer)))))
 
+; Escribe cada fila del laberinto en el archivo recursivamente.
+; Parámetros:
+;   laberint -> Laberinto como lista de listas.
+;   fp       -> Descriptor de archivo abierto para escritura.
 (defun escriu-laberint-rec (laberint fp)
-  "Escribe cada fila del laberinto en el archivo recursivamente."
   (cond
    ((null laberint) nil) ; Caso base: no hay más filas
    (t (escriu-fila (car laberint) fp)
       (write-char #\Newline fp) ; Salto de línea después de cada fila
       (escriu-laberint-rec (cdr laberint) fp))))
 
-(defun escriu-laberint-rec (laberint fp)
-  "Escribe cada fila del laberinto en el archivo recursivamente."
-  (cond
-   ((null laberint) nil) ; Caso base: no hay más filas
-   (t (escriu-fila (car laberint) fp)
-      (write-char #\Newline fp) ; Salto de línea después de cada fila
-      (escriu-laberint-rec (cdr laberint) fp))))
-
+; Escribe cada celda de una fila en el archivo recursivamente.
+; Parámetros:
+;   fila -> Fila como lista.
+;   fp   -> Descriptor de archivo abierto para escritura.
 (defun escriu-fila (fila fp)
-  "Escribe cada celda de una fila en el archivo recursivamente."
   (cond
    ((null fila) nil) ; Caso base: fila vacía
    (t (write-char (celda-a-caracter (car fila)) fp)
       (escriu-fila (cdr fila) fp))))
 
+; Convierte una celda en su representación de texto.
+; Parámetros:
+;   celda -> Símbolo de la celda ('paret, 'cami, 'entrada, 'sortida).
 (defun celda-a-caracter (celda)
-  "Convierte una celda en su representación de texto."
   (cond
    ((eq celda 'paret) #\#)
    ((eq celda 'cami) #\.)
@@ -252,8 +347,11 @@
    (t #\ ))) ; Celda desconocida
 
  ; ------------------ FUNCIONES AUXILIARES -------------------
+
+; Cuenta los elementos de una lista de forma recursiva.
+; Parámetros:
+;   lista -> Lista a contar.
  (defun contar-elementos (lista)
-  "Cuenta los elementos de una lista de forma recursiva."
   (cond
    ((null lista) 0)
    (t (+ 1 (contar-elementos (cdr lista))))))
