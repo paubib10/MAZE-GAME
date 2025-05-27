@@ -36,6 +36,14 @@
 ; 1. Ajuste dinámico del tamaño de las celdas:
 ;    - Implementado en la función (calcular-celda-tam ancho-ventana alto-ventana laberinto).
 ;    - Permite que el laberinto se adapte al tamaño de la ventana gráfica.
+; 2. Generación de laberintos de cualquier tamaño:
+;    - El usuario puede generar laberintos de tamaño superior a 25x25, e incluso hasta 50x50 o más.
+;    - No hay límite en el tamaño, siempre que la memoria lo permita.
+; 3. Generación de laberintos no necesariamente cuadrados:
+;    - Es posible especificar un número diferente de filas y columnas al crear el laberinto.
+; 4. Visualización gráfica diferenciada:
+;    - Cada tipo de celda (pared, camino, entrada, salida, jugador) se representa con un color 
+;      distinto para facilitar la exploración visual.
 ;
 ; ------------------ DISEÑO FUNCIONAL ------------------------
 ; El programa está dividido en dos partes principales:
