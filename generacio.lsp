@@ -24,15 +24,6 @@
 ;    - Ejemplo: (genera "laberint.txt" 10 10)
 ;      Esto generará un laberinto de 10x10 y lo guardará en el archivo "laberint.txt".
 ;
-; ------------------ ASPECTOS OPCIONALES ---------------------
-; 1. Generación aleatoria de entrada y salida:
-;    - Implementado en las funciones (seleccionar-entrada) y (seleccionar-salida).
-;    - Estas funciones seleccionan posiciones aleatorias dentro del laberinto para la entrada y la salida.
-;
-; 2. Algoritmo DFS para generar caminos:
-;    - Implementado en las funciones (dfs-generar-laberinto) y (dfs-visitar-vecinos).
-;    - Estas funciones generan caminos en el laberinto utilizando un algoritmo de búsqueda en profundidad (DFS).
-;
 ; ------------------ DISEÑO FUNCIONAL ------------------------
 ; El programa está diseñado para generar laberintos de manera eficiente y flexible:
 ; 1. Creación del laberinto:
@@ -40,10 +31,13 @@
 ;    - Se añaden bordes al laberinto con la función (agregar-bordes).
 ;
 ; 2. Generación de caminos:
-;    - Se utiliza un algoritmo DFS para generar caminos aleatorios en el laberinto.
+;    - Se utiliza un algoritmo DFS recursivo para generar caminos aleatorios en el laberinto.
 ;    - Las funciones (mezclar-direcciones) y (es-pared-valida) aseguran que los caminos sean válidos.
 ;
-; 3. Escritura del laberinto en un archivo:
+; 3. Generación y colocación de entrada y salida:
+;    - Las funciones (seleccionar-entrada), (colocar-entrada), (seleccionar-salida) y (colocar-salida) gestionan la posición de entrada y salida.
+;
+; 4. Escritura del laberinto en un archivo:
 ;    - La función (guardar-laberinto) escribe el laberinto generado en un archivo de texto.
 ;    - Cada celda del laberinto se convierte en un carácter con la función (celda-a-caracter).
 ;
